@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Head of Demand Generation — 30-60-90 Day Plan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --deep-green:   #091D13;
+      --dark-green:   #092115;
+      --green:        #17412D;
+      --mint:         #ECFFF5;
+      --light-mint:   #F6FFFA;
+      --primary:      var(--deep-green);
+      --primary-dark: var(--dark-green);
+      --primary-mid:  var(--green);
+      --text-light:   var(--mint);
+      --text-dark:    var(--dark-green);
+      --bg-light:     var(--light-mint);
+      --bg-tint:      #E0F5EA;
+      --border-light: #C8E6D5;
+      --text-secondary: #444444;
+      --text-muted:     #666666;
+      --text-faint:     #888888;
+      --green-status:  #22C55E;
+      --amber:         #F59E0B;
+      --red:           #EF4444;
+      --blue-accent:   #3B82F6;
+      --warn-bg:       #FEF3C7;
+      --success-bg:    #DCFCE7;
+      --critical-bg:   #FEE2E2;
+      --warn-text:     #92400E;
+      --success-text:  #166534;
+      --critical-text: #991B1B;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-dark);
+      background: var(--bg-light);
+    }
+
+    p   { line-height: 1.7; font-weight: 300; margin-bottom: 12px; }
+    li  { font-weight: 300; margin-bottom: 6px; }
+    strong { font-weight: 600; }
+
+    h2 { font-size: 18px; font-weight: 500; margin-bottom: 12px; color: var(--primary); }
+    h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--primary); }
+
+    /* Cover */
+    .cover {
+      background: var(--primary);
+      color: var(--text-light);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cover::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 60%);
+    }
+    .cover-tag {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      font-weight: 500;
+      opacity: 0.7;
+      margin-bottom: 20px;
+    }
+    .cover-title {
+      font-family: Georgia, serif;
+      font-size: 44px;
+      font-weight: 300;
+      line-height: 1.2;
+      max-width: 700px;
+      margin-bottom: 16px;
+    }
+    .cover-sub {
+      font-size: 15px;
+      font-weight: 300;
+      opacity: 0.8;
+      max-width: 500px;
+    }
+    .cover-bar {
+      width: 60px;
+      height: 3px;
+      background: var(--green-status);
+      margin: 30px auto;
+      border-radius: 2px;
+    }
+    .cover-meta {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.5;
+      margin-top: 10px;
+    }
+
+    /* Container */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 60px 40px;
+    }
+
+    /* Sections */
+    section {
+      margin-bottom: 60px;
+    }
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--primary-mid);
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-family: Georgia, serif;
+      font-size: 28px;
+      font-weight: 400;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+    .section-lead {
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      max-width: 700px;
+    }
+
+    /* Phase cards */
+    .phase-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+      margin: 24px 0;
+    }
+
+    .phase-card {
+      background: #fff;
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .phase-header {
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .phase-header.learn {
+      background: var(--primary);
+      color: var(--text-light);
+    }
+    .phase-header.build {
+      background: var(--primary-mid);
+      color: var(--text-light);
+    }
+    .phase-header.execute {
+      background: var(--green-status);
+      color: var(--deep-green);
+    }
+    .phase-days {
+      font-family: Georgia, serif;
+      font-size: 32px;
+      font-weight: 400;
+      line-height: 1;
+    }
+    .phase-label-group {
+      display: flex;
+      flex-direction: column;
+    }
+    .phase-theme {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 600;
+      opacity: 0.75;
+    }
+    .phase-name {
+      font-size: 18px;
+      font-weight: 500;
+    }
+    .phase-body {
+      padding: 24px;
+    }
+
+    /* Focus areas within phases */
+    .focus-area {
+      margin-bottom: 24px;
+    }
+    .focus-area:last-child {
+      margin-bottom: 0;
+    }
+    .focus-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--primary-mid);
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .focus-area ul {
+      list-style: none;
+      padding: 0;
+    }
+    .focus-area li {
+      padding: 6px 0 6px 20px;
+      position: relative;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .focus-area li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 13px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border-light);
+    }
+
+    /* Deliverables callout */
+    .deliverables {
+      background: var(--bg-tint);
+      border-radius: 6px;
+      padding: 16px 20px;
+      margin-top: 20px;
+    }
+    .deliverables-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--primary-mid);
+      margin-bottom: 8px;
+    }
+    .deliverables ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .deliverables li {
+      font-size: 13px;
+      font-weight: 500;
+      padding: 4px 0 4px 22px;
+      position: relative;
+      color: var(--primary);
+    }
+    .deliverables li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--green-status);
+      font-weight: 600;
+    }
+
+    /* KPI row */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .kpi-card {
+      background: #fff;
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+    }
+    .kpi-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .kpi-value {
+      font-family: Georgia, serif;
+      font-size: 28px;
+      font-weight: 400;
+      color: var(--primary);
+    }
+    .kpi-note {
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Callouts */
+    .callout-dark {
+      background: var(--primary);
+      color: var(--text-light);
+      border-radius: 8px;
+      padding: 24px 28px;
+      margin: 32px 0;
+    }
+    .callout-dark .callout-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 600;
+      opacity: 0.6;
+      margin-bottom: 8px;
+    }
+    .callout-dark p {
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.7;
+      margin: 0;
+      color: var(--mint);
+    }
+
+    .callout-light {
+      background: var(--bg-tint);
+      border-left: 4px solid var(--primary-mid);
+      border-radius: 0 8px 8px 0;
+      padding: 20px 24px;
+      margin: 24px 0;
+    }
+    .callout-light p {
+      font-size: 13px;
+      margin: 0;
+      color: var(--text-secondary);
+    }
+
+    /* Success metrics table */
+    .metrics-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 24px 0;
+    }
+    .metrics-table th {
+      background: var(--primary);
+      color: var(--text-light);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 600;
+      padding: 12px 16px;
+      text-align: left;
+    }
+    .metrics-table td {
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 300;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .metrics-table tr:last-child td {
+      border-bottom: none;
+    }
+    .metrics-table tr:nth-child(even) td {
+      background: var(--bg-tint);
+    }
+
+    /* Badge */
+    .badge {
+      display: inline-block;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 3px;
+    }
+    .badge.critical { background: var(--critical-bg); color: var(--critical-text); }
+    .badge.high     { background: var(--warn-bg); color: var(--warn-text); }
+    .badge.medium   { background: var(--bg-tint); color: var(--primary); }
+    .badge.low      { background: var(--success-bg); color: var(--success-text); }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 40px;
+      font-size: 11px;
+      color: var(--text-faint);
+      border-top: 1px solid var(--border-light);
+      margin-top: 60px;
+    }
+
+    @media print {
+      body { font-size: 11px; }
+      .cover { min-height: auto; padding: 80px 40px; page-break-after: always; }
+      section { page-break-inside: avoid; }
+      .phase-card { page-break-inside: avoid; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cover -->
+  <div class="cover">
+    <div class="cover-tag">Maybern</div>
+    <h1 class="cover-title">Head of Demand Generation<br>30-60-90 Day Plan</h1>
+    <div class="cover-bar"></div>
+    <p class="cover-sub">Onboarding framework for building a scalable, orchestrated demand generation engine for private capital operations.</p>
+    <div class="cover-meta">Prepared by Riley · March 2026</div>
+  </div>
+
+  <div class="container">
+
+    <!-- Context -->
+    <section>
+      <div class="section-label">00</div>
+      <h1 class="section-title">Context &amp; Mission</h1>
+      <p class="section-lead">What you're walking into — and what success looks like.</p>
+
+      <div class="callout-dark">
+        <div class="callout-label">The Opportunity</div>
+        <p>Maybern is the fund accounting platform for private equity. We sell $150K–$1.6M ACV enterprise deals into PE firms with complex, consultative sales cycles. Today our pipeline is sourced almost entirely through outbound and network. Your mandate is to build the demand gen function from scratch — creating repeatable, measurable inbound pipeline that compounds over time.</p>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-label">Target ACV Range</div>
+          <div class="kpi-value">$150K–$1.6M</div>
+          <div class="kpi-note">Enterprise PE firms</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Sales Cycle</div>
+          <div class="kpi-value">4–9 mo</div>
+          <div class="kpi-note">Multi-stakeholder, consultative</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Buyer Persona</div>
+          <div class="kpi-value">Fund CFO</div>
+          <div class="kpi-note">COO, Controller, Head of Ops</div>
+        </div>
+      </div>
+
+      <div class="callout-light">
+        <p><strong>What this role is not:</strong> A traditional "marketing manager" hire. This is an orchestration role — you own the strategy, systems, and measurement of how Maybern generates and nurtures demand. You'll build programs, not just content. You'll be measured on pipeline, not impressions.</p>
+      </div>
+    </section>
+
+    <!-- Day 1–30 -->
+    <section>
+      <div class="section-label">01</div>
+      <h1 class="section-title">Days 1–30: Learn</h1>
+      <p class="section-lead">Immerse in the market, the buyer, the product, and the current motion. Earn context before building.</p>
+
+      <div class="phase-grid">
+        <div class="phase-card">
+          <div class="phase-header learn">
+            <div class="phase-days">1–30</div>
+            <div class="phase-label-group">
+              <span class="phase-theme">Phase 1</span>
+              <span class="phase-name">Learn &amp; Diagnose</span>
+            </div>
+          </div>
+          <div class="phase-body">
+
+            <div class="focus-area">
+              <div class="focus-label">Market &amp; Buyer Immersion</div>
+              <ul>
+                <li>Shadow 5+ discovery calls and demos with AEs (Bryan, Gabrielle, Tomer, Will, Asaf) — understand how deals actually happen</li>
+                <li>Study 3–5 closed-won and 3–5 closed-lost deals end-to-end; map the buying committee and decision triggers</li>
+                <li>Build a working understanding of fund accounting, PE waterfalls, NAV calculations, and the "status quo" competitor (spreadsheets + outsourced admin)</li>
+                <li>Interview 3–5 existing clients on what drove their decision and what content/events would have been helpful earlier</li>
+              </ul>
+            </div>
+
+            <div class="focus-area">
+              <div class="focus-label">Internal Alignment</div>
+              <ul>
+                <li>Weekly 1:1s with Riley (SVP Sales), Matt Arnold (Rev Ops), Chris Salvati (Sales Manager), and Ross (CEO) — understand priorities, pain points, and what's been tried before</li>
+                <li>Audit existing content library, website, and any paid/organic channels currently running</li>
+                <li>Map the current lead-to-opportunity handoff process; identify where leads drop or stall</li>
+                <li>Review CRM data with Matt to understand pipeline sources, conversion rates, and velocity by channel</li>
+              </ul>
+            </div>
+
+            <div class="focus-area">
+              <div class="focus-label">Competitive &amp; Market Landscape</div>
+              <ul>
+                <li>Catalog competitor marketing motions — who's running events, publishing content, buying keywords</li>
+                <li>Identify the 5–10 industry conferences, communities, and publications where PE ops leaders spend time</li>
+                <li>Assess the SEO/SEM landscape for fund accounting, PE operations, and adjacent keywords</li>
+              </ul>
+            </div>
+
+            <div class="deliverables">
+              <div class="deliverables-label">Day 30 Deliverables</div>
+              <ul>
+                <li>Market &amp; Buyer Landscape Memo (written summary of what you learned)</li>
+                <li>Current State Audit — inventory of all channels, content, conversion data</li>
+                <li>Opportunity Map — where the biggest gaps and quick wins are</li>
+                <li>Draft 90-Day Demand Gen Strategy (presented to Riley + Ross for alignment)</li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Day 31–60 -->
+    <section>
+      <div class="section-label">02</div>
+      <h1 class="section-title">Days 31–60: Build</h1>
+      <p class="section-lead">Lay the infrastructure, launch first programs, and start generating signal. Prioritize systems that compound.</p>
+
+      <div class="phase-grid">
+        <div class="phase-card">
+          <div class="phase-header build">
+            <div class="phase-days">31–60</div>
+            <div class="phase-label-group">
+              <span class="phase-theme">Phase 2</span>
+              <span class="phase-name">Build &amp; Launch</span>
+            </div>
+          </div>
+          <div class="phase-body">
+
+            <div class="focus-area">
+              <div class="focus-label">Demand Gen Infrastructure</div>
+              <ul>
+                <li>Implement lead scoring model in partnership with Matt and Rev Ops — define MQL/SQL criteria aligned to how AEs actually qualify deals</li>
+                <li>Build attribution and reporting dashboards — pipeline sourced, pipeline influenced, cost per opportunity, channel velocity</li>
+                <li>Set up or optimize marketing automation (email nurture sequences, behavioral triggers, lifecycle stages)</li>
+                <li>Establish SLA with Sales on lead follow-up timing and feedback loops</li>
+              </ul>
+            </div>
+
+            <div class="focus-area">
+              <div class="focus-label">First Programs Live</div>
+              <ul>
+                <li>Launch 1–2 high-value content assets targeting Fund CFOs (e.g., benchmark report, transformation playbook, ROI calculator)</li>
+                <li>Stand up a targeted digital campaign (LinkedIn, potentially Google) focused on top-of-funnel awareness with PE operations leaders</li>
+                <li>Design and plan Maybern's first owned event or webinar series — "Office of the Modern CFO" roundtable or similar</li>
+                <li>Activate an ABM pilot targeting 20–30 named accounts from the sales team's priority list</li>
+              </ul>
+            </div>
+
+            <div class="focus-area">
+              <div class="focus-label">Content &amp; Brand Foundation</div>
+              <ul>
+                <li>Develop a content calendar for the next quarter tied to buyer journey stages and deal themes</li>
+                <li>Create 2–3 case study or customer proof points in collaboration with CS/Sales</li>
+                <li>Establish Maybern's point of view in the market — what do we believe that our buyers don't yet know?</li>
+              </ul>
+            </div>
+
+            <div class="deliverables">
+              <div class="deliverables-label">Day 60 Deliverables</div>
+              <ul>
+                <li>Lead scoring model live in CRM with Sales buy-in</li>
+                <li>Attribution dashboard tracking pipeline by source and influence</li>
+                <li>First content asset published and promoted</li>
+                <li>ABM pilot live with account-level engagement tracking</li>
+                <li>Q3 content calendar finalized</li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Day 61–90 -->
+    <section>
+      <div class="section-label">03</div>
+      <h1 class="section-title">Days 61–90: Execute &amp; Optimize</h1>
+      <p class="section-lead">Drive measurable pipeline, iterate on what's working, and present the forward plan.</p>
+
+      <div class="phase-grid">
+        <div class="phase-card">
+          <div class="phase-header execute">
+            <div class="phase-days">61–90</div>
+            <div class="phase-label-group">
+              <span class="phase-theme">Phase 3</span>
+              <span class="phase-name">Execute &amp; Scale</span>
+            </div>
+          </div>
+          <div class="phase-body">
+
+            <div class="focus-area">
+              <div class="focus-label">Pipeline Generation</div>
+              <ul>
+                <li>Deliver first batch of marketing-sourced qualified opportunities to the sales team</li>
+                <li>Run weekly pipeline review with Riley and Matt — which channels are converting, where to double down, what to kill</li>
+                <li>Optimize campaigns based on 30 days of performance data — adjust targeting, messaging, creative, and spend</li>
+                <li>Launch second wave of ABM plays informed by pilot learnings</li>
+              </ul>
+            </div>
+
+            <div class="focus-area">
+              <div class="focus-label">Sales–Marketing Flywheel</div>
+              <ul>
+                <li>Establish a regular content-from-sales loop: deal themes, objections, and competitive intel feed the content engine</li>
+                <li>Build SDR enablement materials — sequences, talk tracks, and follow-up content aligned to demand gen campaigns</li>
+                <li>Co-develop with Sales a "warm handoff" process for event and webinar attendees</li>
+              </ul>
+            </div>
+
+            <div class="focus-area">
+              <div class="focus-label">Scale Planning</div>
+              <ul>
+                <li>Present a 6-month demand gen roadmap with budget, headcount, and pipeline targets to leadership</li>
+                <li>Identify what vendor, agency, or contractor support is needed vs. what stays in-house</li>
+                <li>Propose event strategy for the next 2 quarters — owned events, sponsorships, and conference presence</li>
+                <li>Recommend martech stack additions or changes based on 60 days of hands-on experience</li>
+              </ul>
+            </div>
+
+            <div class="deliverables">
+              <div class="deliverables-label">Day 90 Deliverables</div>
+              <ul>
+                <li>First marketing-sourced pipeline created and tracked</li>
+                <li>Performance report: what's working, what's not, and why</li>
+                <li>6-month demand gen roadmap with budget and headcount proposal</li>
+                <li>Event strategy and calendar for next 2 quarters</li>
+                <li>Martech recommendation memo</li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Success Metrics -->
+    <section>
+      <div class="section-label">04</div>
+      <h1 class="section-title">Success Metrics</h1>
+      <p class="section-lead">How we'll know this is working — leading indicators in the first 90 days, lagging indicators over time.</p>
+
+      <table class="metrics-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Day 30</th>
+            <th>Day 60</th>
+            <th>Day 90</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Knowledge &amp; Context</strong></td>
+            <td>Can articulate our ICP, buyer journey, and competitive positioning</td>
+            <td>—</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><strong>Infrastructure</strong></td>
+            <td>Current state audit complete</td>
+            <td>Lead scoring + attribution live</td>
+            <td>Full funnel reporting operational</td>
+          </tr>
+          <tr>
+            <td><strong>Programs Live</strong></td>
+            <td>—</td>
+            <td>2+ campaigns running</td>
+            <td>5+ active programs across channels</td>
+          </tr>
+          <tr>
+            <td><strong>Pipeline Contribution</strong></td>
+            <td>—</td>
+            <td>First MQLs generated</td>
+            <td>First marketing-sourced opportunities in pipeline</td>
+          </tr>
+          <tr>
+            <td><strong>Sales Alignment</strong></td>
+            <td>1:1s established, feedback loops designed</td>
+            <td>SLA agreed, SDR materials in use</td>
+            <td>Sales team actively pulling demand gen into deals</td>
+          </tr>
+          <tr>
+            <td><strong>Strategic Plan</strong></td>
+            <td>Draft 90-day plan presented</td>
+            <td>Content calendar finalized</td>
+            <td>6-month roadmap + budget approved</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout-dark">
+        <div class="callout-label">North Star</div>
+        <p>By the end of 90 days, we should have a functioning demand gen engine — not a finished one. The goal is to prove the model works, generate early pipeline signal, and have a clear, funded plan to scale what's working. We're optimizing for learning velocity and system-building, not vanity metrics.</p>
+      </div>
+    </section>
+
+    <!-- Key Relationships -->
+    <section>
+      <div class="section-label">05</div>
+      <h1 class="section-title">Key Relationships</h1>
+      <p class="section-lead">Who to build tight working relationships with in the first 90 days.</p>
+
+      <table class="metrics-table">
+        <thead>
+          <tr>
+            <th>Person</th>
+            <th>Role</th>
+            <th>Why It Matters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Riley</strong></td>
+            <td>SVP of Sales (your manager)</td>
+            <td>Pipeline targets, strategy alignment, campaign prioritization</td>
+          </tr>
+          <tr>
+            <td><strong>Matt Arnold</strong></td>
+            <td>Director, Revenue Operations</td>
+            <td>CRM data, attribution, lead scoring, reporting infrastructure</td>
+          </tr>
+          <tr>
+            <td><strong>Chris Salvati</strong></td>
+            <td>Sales Manager</td>
+            <td>AE feedback loops, SDR coordination, campaign-to-deal alignment</td>
+          </tr>
+          <tr>
+            <td><strong>Ross</strong></td>
+            <td>CEO</td>
+            <td>Vision, brand positioning, budget approvals, market POV</td>
+          </tr>
+          <tr>
+            <td><strong>AE Team</strong></td>
+            <td>Bryan, Gabrielle, Tomer, Will, Asaf</td>
+            <td>Deal intelligence, content feedback, account-level targeting input</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </div>
+
+  <div class="footer">
+    Confidential — Maybern · March 2026
+  </div>
+
+</body>
+</html>
