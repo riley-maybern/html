@@ -208,6 +208,20 @@
     .q-progress-track { flex: 1; height: 4px; background: var(--border-light); border-radius: 2px; overflow: hidden; }
     .q-progress-fill { height: 100%; background: var(--green-status); border-radius: 2px; transition: width 0.3s ease; }
     .q-progress-label { font-size: 11px; font-weight: 600; color: var(--green-status); white-space: nowrap; }
+    .q-cat {
+      display: inline-block; font-size: 8px; text-transform: uppercase;
+      letter-spacing: 1.5px; font-weight: 700; padding: 2px 8px;
+      border-radius: 3px; margin-right: 6px; vertical-align: middle;
+    }
+    .q-cat.discovery { background: var(--bg-tint); color: var(--green); }
+    .q-cat.metrics { background: #EDE9FE; color: #5B21B6; }
+    .q-cat.econ-buyer { background: #FEF3C7; color: #92400E; }
+    .q-cat.decision-criteria { background: #DBEAFE; color: #1E40AF; }
+    .q-cat.decision-process { background: #E0E7FF; color: #3730A3; }
+    .q-cat.champion { background: #FCE7F3; color: #9D174D; }
+    .q-cat.competition { background: #FEE2E2; color: #991B1B; }
+    .q-cat.pricing { background: #F0FDF4; color: #166534; }
+    .q-cat.paper-process { background: #F1F5F9; color: #475569; }
 
     /* ── Exit Criteria Gate ── */
     .exit-section { margin-bottom: 28px; }
@@ -318,11 +332,11 @@ const stages = [
     internalPrep: ["Fund size and number of vehicles", "Admin relationship", "Recent or upcoming fund launches", "Known Excel reliance", "Known audit or reconciliation friction"],
     priorContext: ["Any mention of reconciliation", "Any mention of shadow models", "Any mention of growth", "Any mention of side letters"],
     questions: [
-      "Before I assume this is relevant, can you walk me through how the flow of calculations works today from your GL through to your investor portal?",
-      "How are you currently managing waterfall and fee calculations?",
-      "How do you validate those calculations before numbers go out to investors?",
-      "As you add funds, does the process stay consistent or require more customization each time?",
-      "Have you explored other ways to solve this, or is this the first time you are looking externally?"
+      {text: "Before I assume this is relevant, can you walk me through how the flow of calculations works today from your GL through to your investor portal?", cat: "discovery"},
+      {text: "How are you currently managing waterfall and fee calculations?", cat: "discovery"},
+      {text: "How do you validate those calculations before numbers go out to investors?", cat: "discovery"},
+      {text: "As you add funds, does the process stay consistent or require more customization each time?", cat: "discovery"},
+      {text: "Have you explored other ways to solve this, or is this the first time you are looking externally?", cat: "competition"}
     ],
     exitCriteria: [
       "Client clearly states where waterfall and fee logic lives.",
@@ -344,19 +358,20 @@ const stages = [
     internalPrep: ["Discovery checklist", "ROI model", "Directional pricing range", "Stakeholder mapping template"],
     priorContext: ["Stated reconciliation hours", "Mentioned complexity", "Mentioned audit friction", "Mentioned growth plans"],
     questions: [
-      "Can you walk me through what actually happens when you run a distribution \u2014 from event to investor statement?",
-      "Where does the fee and carry logic actually live today?",
-      "Who is responsible for updating and maintaining the model?",
-      "Do you reconcile your internal calculations against what the admin produces?",
-      "If you had to estimate, how many hours per quarter go into maintaining or checking the waterfall logic?",
-      "What does this reconciliation burden actually cost you annually?",
-      "What is the exposure if a calculation error hits an LP?",
-      "When an LP or auditor challenges this, who ultimately has to defend it?",
-      "Who would need to approve a decision like this, and what does their process usually look like?",
-      "Beyond the technical piece, what else matters to you in making this decision?",
-      "Walk me through what the full evaluation and approval process looks like \u2014 procurement, legal review, budget cycles, approval thresholds?",
-      "If this made sense to you, would you be comfortable presenting it internally, and what would you need from us to make that easy?",
-      "Firms your size typically invest around X basis points for this layer. Is that within the realm of something you would evaluate seriously?"
+      {text: "Can you walk me through what actually happens when you run a distribution \u2014 from event to investor statement?", cat: "discovery"},
+      {text: "Where does the fee and carry logic actually live today?", cat: "discovery"},
+      {text: "Who is responsible for updating and maintaining the model?", cat: "discovery"},
+      {text: "Do you reconcile your internal calculations against what the admin produces?", cat: "discovery"},
+      {text: "If you had to estimate, how many hours per quarter go into maintaining or checking the waterfall logic?", cat: "metrics"},
+      {text: "What does this reconciliation burden actually cost you annually?", cat: "metrics"},
+      {text: "What is the exposure if a calculation error hits an LP?", cat: "metrics"},
+      {text: "When an LP or auditor challenges this, who ultimately has to defend it?", cat: "discovery"},
+      {text: "Who would need to approve a decision like this, and what does their process usually look like?", cat: "econ-buyer"},
+      {text: "Beyond the technical piece, what else matters to you in making this decision?", cat: "decision-criteria"},
+      {text: "Walk me through what the full evaluation and approval process looks like \u2014 procurement, legal review, budget cycles, approval thresholds?", cat: "decision-process"},
+      {text: "If this made sense to you, would you be comfortable presenting it internally, and what would you need from us to make that easy?", cat: "champion"},
+      {text: "To pressure-test this properly, we\u2019ll need to review sample waterfall language. Would that require an NDA?", cat: "decision-process"},
+      {text: "Firms your size typically invest around X basis points for this layer. Is that within the realm of something you would evaluate seriously?", cat: "pricing"}
     ],
     exitCriteria: [
       "Rep can clearly describe full calculation flow.",
@@ -384,9 +399,8 @@ const stages = [
     internalPrep: ["NDA template ready", "Document checklist prepared", "Internal SME briefed", "Champion one-pager or internal deck prepared"],
     priorContext: ["Known waterfall tiers", "Known side letters", "Known admin export method"],
     questions: [
-      "To pressure-test this properly, we\u2019ll need to review sample waterfall language. Would that require an NDA?",
-      "Is there anything in your structure that tends to create calculation complexity?",
-      "If this made sense to you, would you be comfortable presenting it internally, and what would you need from us to make that easy?"
+      {text: "Is there anything in your structure that tends to create calculation complexity?", cat: "discovery"},
+      {text: "If this made sense to you, would you be comfortable presenting it internally, and what would you need from us to make that easy?", cat: "champion"}
     ],
     exitCriteria: [
       "NDA sent immediately after agreement to evaluate technically.",
@@ -409,10 +423,10 @@ const stages = [
     internalPrep: ["Tailored demo configured", "Edge cases pre-built", "Integration flow mapped"],
     priorContext: ["Actual waterfall tiers", "Side letter logic", "Admin export format"],
     questions: [
-      "Are there non-standard waterfall tiers or catch-ups we should factor in?",
-      "How do side letters affect your base waterfall today?",
-      "In your case, would Maybern serve as the calculator or validation layer?",
-      "Do you see any structural reason this wouldn\u2019t work here?"
+      {text: "Are there non-standard waterfall tiers or catch-ups we should factor in?", cat: "discovery"},
+      {text: "How do side letters affect your base waterfall today?", cat: "discovery"},
+      {text: "In your case, would Maybern serve as the calculator or validation layer?", cat: "decision-criteria"},
+      {text: "Do you see any structural reason this wouldn\u2019t work here?", cat: "discovery"}
     ],
     exitCriteria: [
       "Client confirms Maybern can replicate their actual waterfall tiers.",
@@ -435,9 +449,9 @@ const stages = [
     internalPrep: ["Final pricing", "Business case summary with dollarized ROI", "Implementation timeline"],
     priorContext: [],
     questions: [
-      "Is this a priority this fiscal period?",
-      "Where would this sit budget-wise?",
-      "If we align on terms, is there anything internally that would delay this?"
+      {text: "Is this a priority this fiscal period?", cat: "econ-buyer"},
+      {text: "Where would this sit budget-wise?", cat: "econ-buyer"},
+      {text: "If we align on terms, is there anything internally that would delay this?", cat: "decision-process"}
     ],
     exitCriteria: [
       "Proposal delivered.",
@@ -456,8 +470,8 @@ const stages = [
     goal: "Execute the approved decision.",
     icps: [], internalPrep: [], priorContext: [],
     questions: [
-      "Is there anything in security or legal that could slow this down?",
-      "What signature timeline should we align around?"
+      {text: "Is there anything in security or legal that could slow this down?", cat: "paper-process"},
+      {text: "What signature timeline should we align around?", cat: "paper-process"}
     ],
     exitCriteria: [
       "Security review completed.",
@@ -484,6 +498,18 @@ let activeStage = 0;
 let checkedItems = {};
 let checkedQuestions = {};
 stages.forEach((_, i) => { checkedItems[i] = {}; checkedQuestions[i] = {}; });
+
+var catLabels = {
+  "discovery": "Discovery",
+  "metrics": "Metrics",
+  "econ-buyer": "Economic Buyer",
+  "decision-criteria": "Decision Criteria",
+  "decision-process": "Decision Process",
+  "champion": "Champion",
+  "competition": "Competition",
+  "pricing": "Pricing",
+  "paper-process": "Paper Process"
+};
 
 function buildChevrons() {
   const bar = document.getElementById('chevronBar');
@@ -523,7 +549,7 @@ function getCheckedQCount(idx) {
 function copyQuestion(el, text, evt) {
   evt.stopPropagation();
   navigator.clipboard.writeText(text).then(() => {
-    const hint = el.closest('.question-card').querySelector('.copy-hint');
+    var hint = el.closest('.question-card').querySelector('.copy-hint');
     hint.textContent = '\u2713 Copied';
     hint.style.opacity = '1';
     hint.style.color = '#166534';
@@ -567,11 +593,13 @@ function renderStage() {
     h += '<div class="questions-section animate-in delay-3"><h3>Required Questions to Advance</h3>';
     h += '<div class="q-progress-bar"><div class="q-progress-track"><div class="q-progress-fill" style="width:' + qPct + '%"></div></div><span class="q-progress-label">' + qChecked + '/' + qTotal + ' completed</span></div>';
     s.questions.forEach((q, qi) => {
+      var qText = q.text;
+      var qCat = q.cat;
       var qIsChecked = checkedQuestions[activeStage] && checkedQuestions[activeStage][qi];
       h += '<div class="question-card' + (qIsChecked ? ' q-checked' : '') + '">';
       h += '<div class="q-check" onclick="toggleQuestion(' + activeStage + ',' + qi + ',event)"></div>';
-      h += '<div class="q-body"><div class="q-tag">Required ' + (qi + 1) + '</div><p onclick="copyQuestion(this,\'' + esc(q) + '\',event)">\u201C' + q + '\u201D</p></div>';
-      h += '<span class="copy-hint" onclick="copyQuestion(this,\'' + esc(q) + '\',event)">Click to copy</span>';
+      h += '<div class="q-body"><div class="q-tag"><span class="q-cat ' + qCat + '">' + catLabels[qCat] + '</span></div><p onclick="copyQuestion(this,\'' + esc(qText) + '\',event)">\u201C' + qText + '\u201D</p></div>';
+      h += '<span class="copy-hint" onclick="copyQuestion(this,\'' + esc(qText) + '\',event)">Click to copy</span>';
       h += '</div>';
     });
     h += '</div>';
