@@ -1400,7 +1400,7 @@ const stages = [
       content: "<p>Requesting the LPA (Limited Partnership Agreement) early in the process is the single highest-leverage move a rep can make. Here's why:</p>" +
         "<ul>" +
         "<li><span class='bullet'></span><strong>Reveals true complexity</strong> — The LPA contains the actual waterfall terms, fee structures, clawback provisions, and side letter carve-outs. You can't accurately scope or price without it.</li>" +
-        "<li><span class='bullet'></span><strong>Drives pricing up</strong> — Every complexity you find in the LPA (preferred return tiers, catch-up mechanics, GP co-invest, deal-by-deal carry) increases the value Maybern delivers — and justifies higher pricing.</li>" +
+        "<li><span class='bullet'></span><strong>Drives pricing up</strong> — Every complexity you find in the LPA (preferred return tiers, catch-up mechanics, hybrid structures, side letter carve-outs) increases the value Maybern delivers — and justifies higher pricing.</li>" +
         "<li><span class='bullet'></span><strong>Qualifies the deal</strong> — If the prospect won't share the LPA after NDA, they're not serious. If the LPA reveals simple economics, the deal may not be worth pursuing at enterprise pricing.</li>" +
         "<li><span class='bullet'></span><strong>Arms your SE</strong> — The solutions team can pre-configure the demo environment to mirror the prospect's actual structure. A demo built from their LPA is 10x more impactful than a generic one.</li>" +
         "<li><span class='bullet'></span><strong>Surfaces the 'messy middle'</strong> — LPAs almost always contain exceptions, overrides, and edge cases that the prospect hasn't thought about automating. This is where you build urgency.</li>" +
@@ -2503,7 +2503,7 @@ function renderValueStory() {
   h += '<div class="cap-grid" style="margin-bottom:16px;">';
   const references = [
     { icon: '🏛️', title: 'Top-Tier PE Names', desc: 'Maybern serves firms managing billions across complex multi-fund, multi-series structures. In conversations, you can reference that "top-tier PE firms with $10B+ AUM" rely on Maybern without naming names unless approved.' },
-    { icon: '📈', title: 'Complex Use Cases Live', desc: 'Clients running European waterfalls, deal-by-deal carry, hybrid structures, GP co-invest, and multi-currency funds are live on the platform today.' },
+    { icon: '📈', title: 'Complex Use Cases Live', desc: 'Clients running European waterfalls, hybrid structures, tiered carry, and multi-entity fund families are live on the platform today.' },
     { icon: '🔢', title: 'Implementation Track Record', desc: 'Every implementation has surfaced spreadsheet errors. Use this as a proof point: "100% of our implementations have uncovered calculation discrepancies in the existing models."' },
     { icon: '🏢', title: 'Fund Admin Coexistence', desc: 'Multiple clients use Maybern alongside a third-party administrator as a governance and oversight layer — not replacing the admin, but holding them accountable.' }
   ];
@@ -3761,12 +3761,6 @@ function renderPricingPackaging() {
   h += '<p style="font-size:13px;">Bi-directional sync with GL. Mapping, validation, and reconciliation workflows.</p>';
   h += '</div>';
 
-  h += '<div class="content-card" style="border-left:4px solid #059669;">';
-  h += '<h4>🤝 Co-Invest / Employee Carry</h4>';
-  h += '<div style="font-size:28px;font-weight:700;color:#059669;margin:8px 0;">$3,500 / yr</div>';
-  h += '<div style="font-size:14px;color:#6b7280;margin-bottom:8px;">+ $3,500 one-time setup per vehicle</div>';
-  h += '<p style="font-size:13px;">Handles parallel structures, different economics, and separate reporting for co-invest and carry plans.</p>';
-  h += '</div>';
 
   h += '<div class="content-card" style="border-left:4px solid #7c3aed;">';
   h += '<h4>📁 SMAs / CIVs</h4>';
