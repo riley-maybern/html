@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Enablement Feedback — Maybern</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --deep-green: #091D13;
+            --dark-green: #092115;
+            --green: #17412D;
+            --mint: #ECFFF5;
+            --light-mint: #F6FFFA;
+            --bg-tint: #E0F5EA;
+            --border-light: #C8E6D5;
+            --text-secondary: #444444;
+            --text-muted: #666666;
+            --text-faint: #888888;
+            --success-bg: #DCFCE7;
+            --success-text: #166534;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light-mint);
+            color: #2d3436;
+            line-height: 1.6;
+            font-size: 14px;
+            font-weight: 300;
+        }
+        strong { font-weight: 600; }
+
+        /* Topbar */
+        .topbar {
+            background: var(--deep-green);
+            padding: 13px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 200;
+        }
+        .logo { display: flex; align-items: center; }
+        .logo svg { height: 22px; width: auto; }
+        .topbar-label {
+            color: var(--mint);
+            font-size: 11px;
+            opacity: 0.6;
+            letter-spacing: 1px;
+        }
+
+        .survey-container {
+            max-width: 680px;
+            margin: 40px auto;
+            padding: 0 20px 60px;
+        }
+        .header {
+            background: linear-gradient(135deg, var(--deep-green) 0%, var(--green) 100%);
+            color: white;
+            padding: 40px 36px;
+            border-radius: 12px 12px 0 0;
+            margin-bottom: 0;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .header p {
+            font-size: 14px;
+            opacity: 0.85;
+            line-height: 1.5;
+            font-weight: 300;
+        }
+        .trust-note {
+            background: rgba(236,255,245,0.1);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-top: 16px;
+            font-size: 13px;
+            border-left: 3px solid var(--mint);
+        }
+        .form-body {
+            background: white;
+            padding: 36px;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 4px 20px rgba(9,33,21,0.06);
+        }
+        .section {
+            margin-bottom: 36px;
+            padding-bottom: 36px;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .section:last-of-type {
+            border-bottom: none;
+            margin-bottom: 20px;
+            padding-bottom: 0;
+        }
+        .section-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        .question {
+            margin-bottom: 28px;
+        }
+        .question:last-child {
+            margin-bottom: 0;
+        }
+        .question label {
+            display: block;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--dark-green);
+        }
+        .question .subtext {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+        .rating-group {
+            display: flex;
+            gap: 0;
+            margin-top: 8px;
+        }
+        .rating-group input[type="radio"] {
+            display: none;
+        }
+        .rating-group label.rating-option {
+            flex: 1;
+            text-align: center;
+            padding: 10px 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1.5px solid var(--border-light);
+            background: var(--light-mint);
+            color: var(--text-secondary);
+            transition: all 0.15s ease;
+            margin: 0;
+        }
+        .rating-group label.rating-option:first-of-type {
+            border-radius: 8px 0 0 8px;
+        }
+        .rating-group label.rating-option:last-of-type {
+            border-radius: 0 8px 8px 0;
+        }
+        .rating-group label.rating-option:not(:first-of-type) {
+            border-left: none;
+        }
+        .rating-group input[type="radio"]:checked + label.rating-option {
+            background: var(--deep-green);
+            color: white;
+            border-color: var(--deep-green);
+        }
+        .rating-group input[type="radio"]:checked + label.rating-option + label.rating-option {
+            border-left-color: var(--deep-green);
+        }
+        .rating-anchors {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 6px;
+            font-size: 11px;
+            color: var(--text-faint);
+        }
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid var(--border-light);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 80px;
+            transition: border-color 0.15s;
+            background: var(--light-mint);
+        }
+        textarea:focus {
+            outline: none;
+            border-color: var(--green);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(23,65,45,0.1);
+        }
+        textarea::placeholder {
+            color: var(--text-faint);
+        }
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .checkbox-group input[type="checkbox"] {
+            display: none;
+        }
+        .checkbox-group label.check-option {
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1.5px solid var(--border-light);
+            border-radius: 20px;
+            background: var(--light-mint);
+            color: var(--text-secondary);
+            transition: all 0.15s ease;
+            margin: 0;
+        }
+        .checkbox-group input[type="checkbox"]:checked + label.check-option {
+            background: var(--bg-tint);
+            color: var(--deep-green);
+            border-color: var(--green);
+        }
+        select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid var(--border-light);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            background: var(--light-mint);
+            color: #2d3436;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+        }
+        select:focus {
+            outline: none;
+            border-color: var(--green);
+            background-color: white;
+        }
+        .submit-section {
+            text-align: center;
+            padding-top: 8px;
+        }
+        .submit-btn {
+            background: linear-gradient(135deg, var(--deep-green) 0%, var(--green) 100%);
+            color: white;
+            border: none;
+            padding: 14px 48px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.3px;
+        }
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(9,29,19,0.3);
+        }
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+        .disclaimer {
+            margin-top: 14px;
+            font-size: 12px;
+            color: var(--text-faint);
+        }
+
+        /* Success state */
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 60px 36px;
+            background: white;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 4px 20px rgba(9,33,21,0.06);
+        }
+        .success-message .check-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--success-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 28px;
+            color: var(--success-text);
+        }
+        .success-message h2 {
+            font-size: 22px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--dark-green);
+        }
+        .success-message p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        .error-message {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: #FEF2F2;
+            border: 1px solid #FECACA;
+            border-radius: 8px;
+            color: #991B1B;
+            font-size: 13px;
+        }
+        .error-message .retry-btn {
+            background: #991B1B;
+            color: #fff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .error-message .retry-btn:hover {
+            background: #7F1D1D;
+        }
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .required-marker {
+            color: #EF4444;
+            margin-left: 2px;
+        }
+
+        @media (max-width: 600px) {
+            .topbar { padding: 13px 20px; }
+            .survey-container { margin: 20px auto; }
+            .header { padding: 28px 24px; }
+            .form-body { padding: 24px; }
+            .rating-group label.rating-option {
+                padding: 8px 2px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div class="logo">
+            <svg width="187" height="38" viewBox="0 0 187 38" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_563_695)"><path d="M5.42437 29.4347H1.16507C0.909947 29.4347 0.703125 29.228 0.703125 28.9728V3.18943C0.703125 2.78403 1.18803 2.57525 1.48253 2.85385L5.74183 6.88312C5.83407 6.97037 5.88632 7.09174 5.88632 7.2187V28.9728C5.88632 29.228 5.6795 29.4347 5.42437 29.4347Z" fill="#ECFFF5"/><path d="M12.029 29.4346H7.76971C7.51459 29.4346 7.30776 29.2278 7.30776 28.9727V13.0802C7.30776 12.7001 7.74122 12.4827 8.0459 12.71L12.3052 15.8869C12.4221 15.974 12.4909 16.1113 12.4909 16.2572V28.9727C12.4909 29.2278 12.2842 29.4346 12.029 29.4346Z" fill="#ECFFF5"/><path d="M18.6336 29.4347H14.3744C14.1192 29.4347 13.9124 29.228 13.9124 28.9728V3.18943C13.9124 2.78403 14.3973 2.57525 14.6918 2.85385L18.9511 6.88312C19.0434 6.97037 19.0956 7.09174 19.0956 7.2187V28.9728C19.0956 29.228 18.8888 29.4347 18.6336 29.4347Z" fill="#ECFFF5"/><path d="M25.2381 29.4347H20.9788C20.7237 29.4347 20.5168 29.228 20.5168 28.9728V3.18943C20.5168 2.78403 21.0017 2.57525 21.2962 2.85385L25.5556 6.88312C25.6478 6.97037 25.7001 7.09174 25.7001 7.2187V28.9728C25.7001 29.228 25.4932 29.4347 25.2381 29.4347Z" fill="#ECFFF5"/><path d="M31.8427 29.4346H27.5834C27.3282 29.4346 27.1215 29.2278 27.1215 28.9727V14.2829C27.1215 13.8775 27.6063 13.6687 27.9009 13.9474L32.1601 17.9767C32.2524 18.0639 32.3046 18.1853 32.3046 18.3122V28.9727C32.3046 29.2278 32.0979 29.4346 31.8427 29.4346Z" fill="#ECFFF5"/><path d="M63.4548 9.86625C61.1037 9.86625 59.1258 10.7741 57.7823 12.2493C56.5508 10.7741 54.6848 9.86625 52.4457 9.86625C50.5051 9.86625 48.9004 10.5472 47.7062 11.6441V10.2824H43.6758V29.3463H47.9301V17.7717C47.9301 15.767 49.3856 14.0649 51.5501 14.0649C53.7519 14.0649 55.17 15.767 55.17 17.7717V29.3463H59.4243V17.7717C59.4243 15.767 60.8798 14.0649 63.0443 14.0649C65.2462 14.0649 66.6643 15.767 66.6643 17.7717V29.3463H70.9186V17.0153C70.9186 12.9302 67.8212 9.86625 63.4548 9.86625Z" fill="#ECFFF5"/><path d="M82.2315 9.86625C78.0518 9.86625 74.9916 12.6654 74.7304 16.4479H78.8728C79.1341 15.0484 80.4775 14.0649 82.2315 14.0649C84.2094 14.0649 85.7022 15.351 85.7022 17.053V17.5826L80.7761 18.0365C76.9323 18.377 74.2826 20.1925 74.2826 23.8995C74.2826 27.3416 76.8949 29.7623 80.7761 29.7623C82.9406 29.7623 84.508 29.1193 85.7022 27.9467V29.3463H89.882V17.053C89.882 12.8923 86.7845 9.86625 82.2315 9.86625ZM81.5971 26.0555C79.5819 26.0555 78.537 25.0342 78.537 23.7859C78.537 22.4999 79.3206 21.5921 81.3732 21.4029L85.7022 21.0247V22.689C85.7022 24.656 84.0602 26.0555 81.5971 26.0555Z" fill="#ECFFF5"/><path d="M105.102 10.2824L100.476 22.8403L95.8847 10.2824H91.2575L98.1991 28.9681L95.1012 37.3653H99.6172L109.655 10.2824H105.102Z" fill="#ECFFF5"/><path d="M121.883 9.86625C119.645 9.86625 117.666 10.6606 116.21 11.9467V0.523438H111.957V29.3463H116.173V27.6441C117.629 28.9681 119.607 29.7623 121.883 29.7623C127.369 29.7623 131.251 25.3747 131.251 19.8522C131.251 14.2162 127.369 9.86625 121.883 9.86625ZM121.548 25.5638C118.3 25.5638 116.062 23.1051 116.062 19.8522C116.062 16.5236 118.3 14.0649 121.548 14.0649C124.756 14.0649 126.996 16.5236 126.996 19.8522C126.996 23.1051 124.756 25.5638 121.548 25.5638Z" fill="#ECFFF5"/><path d="M152.072 19.7765C152.072 14.1406 148.266 9.86625 142.743 9.86625C137.22 9.86625 133.339 14.1783 133.339 19.8522C133.339 25.4125 137.406 29.7623 143.079 29.7623C146.661 29.7623 149.609 27.9846 151.252 25.2611L147.706 23.0295C146.773 24.5803 145.169 25.6016 143.079 25.6016C140.429 25.6016 138.413 24.0129 137.817 21.6677H151.886C151.998 21.0626 152.072 20.4573 152.072 19.7765ZM142.78 14.027C145.318 14.027 147.221 15.5022 147.744 17.9987H137.742C138.265 15.5022 140.131 14.027 142.78 14.027Z" fill="#ECFFF5"/><path d="M164.283 10.2824C162.379 10.2824 160.625 11.0011 159.543 12.4384V10.2824H155.363V29.3463H159.618V18.9065C159.618 16.4479 161.334 14.5188 163.834 14.5188H166.484V10.2824H164.283Z" fill="#ECFFF5"/><path d="M178.339 9.86625C176.361 9.86625 174.644 10.5472 173.375 11.7197V10.2824H169.158V29.3463H173.413V18.2257C173.413 15.9183 175.017 14.0649 177.48 14.0649C179.98 14.0649 181.548 15.9183 181.548 18.2257V29.3463H185.802V17.4692C185.802 13.1193 182.667 9.86625 178.339 9.86625Z" fill="#ECFFF5"/></g><defs><clipPath id="clip0_563_695"><rect width="185.703" height="36.9558" fill="white" transform="translate(0.703125 0.523438)"/></clipPath></defs></svg>
+        </div>
+        <span class="topbar-label">Sales Enablement Survey</span>
+    </div>
+
+    <div class="survey-container">
+        <div class="header">
+            <h1>Product Enablement Feedback</h1>
+            <p>Help the product team understand what's working and what needs to change. This takes about 3 minutes.</p>
+            <div class="trust-note">
+                Your responses are anonymous. Product has asked for honest, constructive feedback &mdash; they want to hear the hard stuff too.
+            </div>
+        </div>
+
+        <form class="form-body" id="surveyForm" onsubmit="handleSubmit(event)">
+
+            <!-- SECTION 1: Yesterday's Session -->
+            <div class="section">
+                <div class="section-label">Yesterday's Session</div>
+
+                <div class="question">
+                    <label>After the session, how confident are you pitching the new product launches to a prospect?<span class="required-marker">*</span></label>
+                    <div class="subtext">Not "did you understand it" &mdash; could you sell it tomorrow?</div>
+                    <div class="rating-group">
+                        <input type="radio" name="q1" id="q1_1" value="1" required>
+                        <label class="rating-option" for="q1_1">1</label>
+                        <input type="radio" name="q1" id="q1_2" value="2">
+                        <label class="rating-option" for="q1_2">2</label>
+                        <input type="radio" name="q1" id="q1_3" value="3">
+                        <label class="rating-option" for="q1_3">3</label>
+                        <input type="radio" name="q1" id="q1_4" value="4">
+                        <label class="rating-option" for="q1_4">4</label>
+                        <input type="radio" name="q1" id="q1_5" value="5">
+                        <label class="rating-option" for="q1_5">5</label>
+                    </div>
+                    <div class="rating-anchors">
+                        <span>Not at all confident</span>
+                        <span>Fully deal-ready</span>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label>What was the single most useful thing from yesterday's session?</label>
+                    <div class="subtext">If nothing stood out, say that &mdash; it's useful feedback.</div>
+                    <textarea name="q2" placeholder="e.g. The competitive positioning slide, the live demo of X, etc."></textarea>
+                </div>
+
+                <div class="question">
+                    <label>What was missing or unclear that would have made the session more valuable?<span class="required-marker">*</span></label>
+                    <div class="subtext">Think about what you'll actually need in front of a customer.</div>
+                    <textarea name="q3" placeholder="e.g. Objection handling for pricing, a one-pager I can leave behind, more time on use cases..." required></textarea>
+                </div>
+            </div>
+
+            <!-- SECTION 2: Enablement Materials & Readiness -->
+            <div class="section">
+                <div class="section-label">Enablement Materials & Readiness</div>
+
+                <div class="question">
+                    <label>When you get enablement materials from product, how often can you actually use them in a deal?<span class="required-marker">*</span></label>
+                    <div class="rating-group">
+                        <input type="radio" name="q4" id="q4_1" value="1" required>
+                        <label class="rating-option" for="q4_1">Rarely</label>
+                        <input type="radio" name="q4" id="q4_2" value="2">
+                        <label class="rating-option" for="q4_2">Sometimes</label>
+                        <input type="radio" name="q4" id="q4_3" value="3">
+                        <label class="rating-option" for="q4_3">About half</label>
+                        <input type="radio" name="q4" id="q4_4" value="4">
+                        <label class="rating-option" for="q4_4">Usually</label>
+                        <input type="radio" name="q4" id="q4_5" value="5">
+                        <label class="rating-option" for="q4_5">Always</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label>What types of assets would make the biggest difference for you right now?</label>
+                    <div class="subtext">Select all that apply.</div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="q5" id="q5_1" value="battlecards">
+                        <label class="check-option" for="q5_1">Competitive battlecards</label>
+                        <input type="checkbox" name="q5" id="q5_2" value="objections">
+                        <label class="check-option" for="q5_2">Objection handling scripts</label>
+                        <input type="checkbox" name="q5" id="q5_3" value="one-pagers">
+                        <label class="check-option" for="q5_3">Customer-facing one-pagers</label>
+                        <input type="checkbox" name="q5" id="q5_4" value="demos">
+                        <label class="check-option" for="q5_4">Demo environments / recordings</label>
+                        <input type="checkbox" name="q5" id="q5_5" value="case-studies">
+                        <label class="check-option" for="q5_5">Customer case studies</label>
+                        <input type="checkbox" name="q5" id="q5_6" value="pricing">
+                        <label class="check-option" for="q5_6">Pricing guidance / calculators</label>
+                        <input type="checkbox" name="q5" id="q5_7" value="talk-tracks">
+                        <label class="check-option" for="q5_7">Discovery / talk tracks</label>
+                        <input type="checkbox" name="q5" id="q5_8" value="faq">
+                        <label class="check-option" for="q5_8">Technical FAQ</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label>How much lead time do you typically get before a new product hits the market?<span class="required-marker">*</span></label>
+                    <select name="q6" required>
+                        <option value="" disabled selected>Select one</option>
+                        <option value="same-day">Same day or after launch</option>
+                        <option value="less-than-week">Less than a week</option>
+                        <option value="1-2-weeks">1&ndash;2 weeks</option>
+                        <option value="2-4-weeks">2&ndash;4 weeks</option>
+                        <option value="month-plus">More than a month</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- SECTION 3: The Trust Gap -->
+            <div class="section">
+                <div class="section-label">Working with Product</div>
+
+                <div class="question">
+                    <label>How well does product understand the reality of what you face in sales conversations?<span class="required-marker">*</span></label>
+                    <div class="rating-group">
+                        <input type="radio" name="q7" id="q7_1" value="1" required>
+                        <label class="rating-option" for="q7_1">1</label>
+                        <input type="radio" name="q7" id="q7_2" value="2">
+                        <label class="rating-option" for="q7_2">2</label>
+                        <input type="radio" name="q7" id="q7_3" value="3">
+                        <label class="rating-option" for="q7_3">3</label>
+                        <input type="radio" name="q7" id="q7_4" value="4">
+                        <label class="rating-option" for="q7_4">4</label>
+                        <input type="radio" name="q7" id="q7_5" value="5">
+                        <label class="rating-option" for="q7_5">5</label>
+                    </div>
+                    <div class="rating-anchors">
+                        <span>Completely disconnected</span>
+                        <span>Deeply understands our world</span>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label>When you give product feedback about what customers need, how often do you see it reflected?<span class="required-marker">*</span></label>
+                    <div class="rating-group">
+                        <input type="radio" name="q8" id="q8_1" value="1" required>
+                        <label class="rating-option" for="q8_1">Never</label>
+                        <input type="radio" name="q8" id="q8_2" value="2">
+                        <label class="rating-option" for="q8_2">Rarely</label>
+                        <input type="radio" name="q8" id="q8_3" value="3">
+                        <label class="rating-option" for="q8_3">Sometimes</label>
+                        <input type="radio" name="q8" id="q8_4" value="4">
+                        <label class="rating-option" for="q8_4">Often</label>
+                        <input type="radio" name="q8" id="q8_5" value="5">
+                        <label class="rating-option" for="q8_5">Consistently</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label>What's the #1 thing product could do differently to better support you in closing deals?<span class="required-marker">*</span></label>
+                    <div class="subtext">Be specific and direct &mdash; vague feedback is hard to act on.</div>
+                    <textarea name="q9" placeholder="e.g. Stop shipping features without competitive context. Join a customer call once a month. Give us 2 weeks with materials before launch..." required></textarea>
+                </div>
+            </div>
+
+            <!-- SECTION 4: Looking Forward -->
+            <div class="section">
+                <div class="section-label">Looking Forward</div>
+
+                <div class="question">
+                    <label>What format works best for you for enablement going forward?</label>
+                    <div class="subtext">Select all that apply.</div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="q10" id="q10_1" value="live-sessions">
+                        <label class="check-option" for="q10_1">Live sessions (like yesterday)</label>
+                        <input type="checkbox" name="q10" id="q10_2" value="short-videos">
+                        <label class="check-option" for="q10_2">Short video walkthroughs (&lt;5 min)</label>
+                        <input type="checkbox" name="q10" id="q10_3" value="written">
+                        <label class="check-option" for="q10_3">Written cheat sheets</label>
+                        <input type="checkbox" name="q10" id="q10_4" value="office-hours">
+                        <label class="check-option" for="q10_4">Drop-in office hours with product</label>
+                        <input type="checkbox" name="q10" id="q10_5" value="ride-alongs">
+                        <label class="check-option" for="q10_5">Product joining sales calls</label>
+                        <input type="checkbox" name="q10" id="q10_6" value="slack">
+                        <label class="check-option" for="q10_6">Async updates (Slack / email)</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label>Is there anything else you want product to know?</label>
+                    <div class="subtext">No wrong answers. If you've been holding something back, this is the place.</div>
+                    <textarea name="q11" placeholder="Anything goes here..."></textarea>
+                </div>
+            </div>
+
+            <div class="submit-section">
+                <button type="submit" class="submit-btn">Submit Feedback</button>
+                <div class="disclaimer">Responses are anonymous and shared directly with the product team.</div>
+                <div class="error-message" id="errorMessage" style="display:none;">
+                    <span>Something went wrong submitting your response. Please try again.</span>
+                    <button type="submit" class="retry-btn">Retry</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="success-message" id="successMessage">
+            <div class="check-icon">&#10003;</div>
+            <h2>Thanks for your honesty.</h2>
+            <p>Your feedback has been recorded. Product is committed to acting on this &mdash; <br>you'll hear back on what changes are being made.</p>
+        </div>
+    </div>
+
+    <script>
+        // ── CONFIGURATION ──────────────────────────────────────────
+        // Paste your Google Apps Script web app URL here:
+        const GOOGLE_SCRIPT_URL = '';
+        // ────────────────────────────────────────────────────────────
+
+        async function handleSubmit(e) {
+            e.preventDefault();
+
+            const form = document.getElementById('surveyForm');
+            const submitBtn = form.querySelector('.submit-btn');
+            const errorMsg = document.getElementById('errorMessage');
+
+            // Collect form data
+            const formData = new FormData(form);
+            const responses = {};
+
+            for (const [key, value] of formData.entries()) {
+                if (responses[key]) {
+                    if (Array.isArray(responses[key])) {
+                        responses[key].push(value);
+                    } else {
+                        responses[key] = [responses[key], value];
+                    }
+                } else {
+                    responses[key] = value;
+                }
+            }
+
+            // Convert checkbox arrays to comma-separated strings
+            for (const key of Object.keys(responses)) {
+                if (Array.isArray(responses[key])) {
+                    responses[key] = responses[key].join(', ');
+                }
+            }
+
+            // Hide any previous error
+            errorMsg.style.display = 'none';
+
+            // Loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting…';
+
+            try {
+                if (!GOOGLE_SCRIPT_URL) {
+                    throw new Error('Google Script URL not configured');
+                }
+
+                const res = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(responses)
+                });
+
+                // no-cors returns opaque response (status 0), so we trust it went through
+                form.style.display = 'none';
+                document.getElementById('successMessage').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            } catch (err) {
+                console.error('Submission error:', err);
+                errorMsg.style.display = 'flex';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Feedback';
+            }
+        }
+    </script>
+</body>
+</html>
