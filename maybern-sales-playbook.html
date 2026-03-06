@@ -2427,7 +2427,8 @@ function renderValueStory() {
     '<strong>Regulatory exposure</strong> — The SEC has taken enforcement action against firms for calculation errors. TZP Capital took a $1.7M settlement for fee and expense allocation issues.',
     '<strong>Fundraising drag</strong> — LPs increasingly ask about operational infrastructure during due diligence. "We use Excel" is becoming a red flag.',
     '<strong>Opportunity cost</strong> — Senior finance talent spending time maintaining spreadsheets instead of on strategic work.',
-    '<strong>Key-person risk</strong> — If the model owner leaves, reconstruction can take months and introduce new errors.'
+    '<strong>Key-person risk</strong> — If the model owner leaves, reconstruction can take months and introduce new errors.',
+    '<strong>Pref accrual drag</strong> — Slow manual processes delay distributions by days or weeks. Every extra day the money sits means preferred return keeps accruing — quietly eroding GP carry and lowering investor IRR. Faster disbursements aren\'t just operational efficiency; they\'re real dollars back in LP pockets.'
   ];
   costs.forEach(c => {
     h += '<li><span class="bullet"></span>' + c + '</li>';
@@ -2464,7 +2465,8 @@ function renderValueStory() {
     { icon: '⚡', title: 'MXL Configurability', desc: 'Configure any economic structure without engineering tickets. MXL means unique LP terms, side letters, and custom waterfalls are handled in-platform.' },
     { icon: '🌐', title: 'Cross-Fund Visibility', desc: 'Portfolio-level reporting across all funds. See aggregated economics, not just fund-by-fund silos.' },
     { icon: '📝', title: 'Enterprise Audit Trail', desc: 'Before/after comparisons on every change. Who changed what, when, and why. Satisfies LP due diligence and regulatory requirements.' },
-    { icon: '🏗️', title: 'Purpose-Built for Fund Economics', desc: 'Not a repurposed accounting tool or portal. Built from the ground up for waterfall logic, fee calculations, and distribution math.' }
+    { icon: '🏗️', title: 'Purpose-Built for Fund Economics', desc: 'Not a repurposed accounting tool or portal. Built from the ground up for waterfall logic, fee calculations, and distribution math.' },
+    { icon: '⏱️', title: 'Faster Distributions, Better Returns', desc: 'Maybern compresses the distribution cycle by automating waterfall calculations, allocation logic, and investor notices. Faster disbursements mean less time for preferred return to accrue — which directly lowers the pref hurdle, increases GP carry, and improves investor IRR. This is measurable, dollar-for-dollar value that LPs and GPs both feel.' }
   ];
   diffs.forEach(d => {
     h += '<div class="product-card" style="margin-bottom:0;"><div class="card-icon">' + d.icon + '</div><h4>' + d.title + '</h4><p>' + d.desc + '</p></div>';
