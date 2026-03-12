@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maybern — Sales Lifecycle Questions Framework</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --deep-green: #091D13;
+  --dark-green: #092115;
+  --green: #17412D;
+  --mint: #ECFFF5;
+  --light-mint: #F6FFFA;
+  --bg-tint: #E0F5EA;
+  --border-light: #C8E6D5;
+  --text-secondary: #444444;
+  --text-muted: #666666;
+  --text-faint: #888888;
+  --green-status: #22C55E;
+  --amber: #F59E0B;
+  --red: #EF4444;
+  --blue-accent: #3B82F6;
+  --warn-bg: #FEF3C7;
+  --success-bg: #DCFCE7;
+  --critical-bg: #FEE2E2;
+  --warn-text: #92400E;
+  --success-text: #166534;
+  --critical-text: #991B1B;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #111;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+.slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 100px;
+  overflow-y: auto;
+}
+.slide.active { display: flex; }
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+  50% { box-shadow: 0 0 20px 4px rgba(34,197,94,0.15); }
+}
+
+/* Animation classes — applied by JS on slide enter */
+.slide.active h2 {
+  animation: slideUp 0.6s ease-out both;
+}
+.slide.active .lead {
+  animation: fadeIn 0.7s ease-out 0.15s both;
+}
+.slide.active .anim-up {
+  animation: slideUp 0.6s ease-out both;
+}
+.slide.active .anim-left {
+  animation: slideInLeft 0.5s ease-out both;
+}
+.slide.active .anim-right {
+  animation: slideInRight 0.5s ease-out both;
+}
+.slide.active .anim-scale {
+  animation: scaleIn 0.5s ease-out both;
+}
+.slide.active .anim-fade {
+  animation: fadeIn 0.6s ease-out both;
+}
+/* Stagger delays */
+.d1 { animation-delay: 0.2s !important; }
+.d2 { animation-delay: 0.35s !important; }
+.d3 { animation-delay: 0.5s !important; }
+.d4 { animation-delay: 0.65s !important; }
+.d5 { animation-delay: 0.8s !important; }
+.d6 { animation-delay: 0.95s !important; }
+
+/* ===== BELIEF ARC SLIDE ===== */
+@keyframes arcNodeIn {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes arcLabelIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes arcPathDraw {
+  from { stroke-dashoffset: 2000; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes arcGlow {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(34,197,94,0)); }
+  50% { filter: drop-shadow(0 0 8px rgba(34,197,94,0.4)); }
+}
+.belief-arc-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  height: 420px;
+  margin: 0 auto;
+}
+.belief-arc-wrap svg.arc-path-svg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.slide.active .arc-path-line {
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 2000;
+  animation: arcPathDraw 2.5s ease-out 0.3s forwards;
+}
+.arc-node {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--green-status);
+  border: 3px solid rgba(255,255,255,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: white;
+  opacity: 0;
+  z-index: 2;
+  cursor: default;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.arc-node:hover {
+  transform: scale(1.25) !important;
+  box-shadow: 0 0 16px rgba(34,197,94,0.5);
+}
+.slide.active .arc-node {
+  animation: arcNodeIn 0.4s ease-out forwards;
+}
+.arc-label {
+  position: absolute;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.92);
+  text-align: center;
+  width: 110px;
+  line-height: 1.3;
+  opacity: 0;
+  z-index: 2;
+}
+.arc-label .arc-mtg {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--green-status);
+  margin-bottom: 3px;
+}
+.slide.active .arc-label {
+  animation: arcLabelIn 0.35s ease-out forwards;
+}
+.arc-belief-tooltip {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.92);
+  text-align: center;
+  max-width: 600px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+  transition: opacity 0.3s;
+  line-height: 1.5;
+}
+.belief-arc-wrap:hover .arc-belief-tooltip {
+  opacity: 0;
+}
+.slide.active .arc-start-label,
+.slide.active .arc-end-label {
+  animation: arcLabelIn 0.5s ease-out forwards;
+}
+.arc-start-label, .arc-end-label {
+  position: absolute;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0;
+  z-index: 2;
+}
+.arc-start-label {
+  color: rgba(255,255,255,0.5);
+  animation-delay: 0.2s !important;
+}
+.arc-end-label {
+  color: var(--green-status);
+  animation-delay: 3s !important;
+}
+
+/* Slide transition */
+.slide {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.slide.active {
+  opacity: 1;
+}
+
+/* ===== COVER SLIDE ===== */
+.slide-cover {
+  background: linear-gradient(135deg, var(--deep-green) 0%, var(--dark-green) 40%, var(--green) 100%);
+  color: white;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+.slide-cover h1 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 72px;
+  font-weight: 300;
+  letter-spacing: -1.5px;
+  line-height: 1.15;
+  margin-bottom: 20px;
+}
+.slide-cover .subtitle {
+  font-size: 26px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 44px;
+}
+.slide-cover .meta {
+  font-size: 15px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* ===== DARK SLIDES ===== */
+.slide-dark {
+  background: var(--deep-green);
+  color: white;
+}
+.slide-dark h2 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 54px;
+  font-weight: 300;
+  margin-bottom: 14px;
+  line-height: 1.15;
+}
+.slide-dark .lead {
+  font-size: 24px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.88);
+  margin-bottom: 40px;
+  max-width: 900px;
+  line-height: 1.5;
+}
+.slide-dark .quote-box {
+  background: rgba(255,255,255,0.06);
+  border-left: 3px solid var(--green-status);
+  padding: 28px 36px;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 24px;
+  max-width: 950px;
+}
+.slide-dark .quote-box p {
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.88);
+}
+.slide-dark .quote-box .attribution {
+  font-size: 13px;
+  color: rgba(255,255,255,0.55);
+  margin-top: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ===== LIGHT SLIDES ===== */
+.slide-light {
+  background: var(--light-mint);
+  color: var(--deep-green);
+}
+.slide-light h2 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 52px;
+  font-weight: 300;
+  margin-bottom: 10px;
+  line-height: 1.15;
+}
+.slide-light .section-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 10px;
+}
+.slide-light .lead {
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--text-secondary);
+  margin-bottom: 36px;
+  max-width: 900px;
+  line-height: 1.6;
+}
+
+/* ===== WHITE SLIDES ===== */
+.slide-white {
+  background: #fff;
+  color: var(--deep-green);
+}
+.slide-white h2 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 50px;
+  font-weight: 300;
+  margin-bottom: 10px;
+}
+.slide-white .section-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 10px;
+}
+.slide-white .lead {
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+  max-width: 900px;
+  line-height: 1.6;
+}
+
+/* ===== SHARED COMPONENTS ===== */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 20px;
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 28px;
+  margin-top: 20px;
+}
+
+.card {
+  background: rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 32px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.slide-light .card, .slide-white .card {
+  background: white;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.card .card-num {
+  font-size: 38px;
+  font-weight: 700;
+  color: var(--green-status);
+  margin-bottom: 10px;
+}
+.card h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.card p {
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+.slide-dark .card p { color: rgba(255,255,255,0.85); }
+.slide-dark .card h3 { color: white; }
+
+.tag {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-right: 6px;
+  margin-bottom: 6px;
+}
+.tag-advancing { background: rgba(59,130,246,0.15); color: var(--blue-accent); }
+.tag-confirming { background: rgba(34,197,94,0.15); color: var(--green-status); }
+.tag-pain { background: rgba(245,158,11,0.15); color: var(--amber); }
+.slide-dark .tag-advancing { background: rgba(59,130,246,0.2); }
+.slide-dark .tag-confirming { background: rgba(34,197,94,0.2); }
+.slide-dark .tag-pain { background: rgba(245,158,11,0.2); }
+
+.example-q {
+  background: rgba(255,255,255,0.04);
+  border-left: 3px solid var(--green-status);
+  padding: 18px 24px;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 14px;
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.6;
+}
+/* Advancing questions — blue accent */
+.example-q.q-advancing { border-left-color: var(--blue-accent); }
+.slide-light .example-q.q-advancing, .slide-white .example-q.q-advancing {
+  background: rgba(59,130,246,0.06); border-left-color: var(--blue-accent);
+}
+/* Confirming questions — green accent */
+.example-q.q-confirming { border-left-color: var(--green-status); }
+.slide-light .example-q.q-confirming, .slide-white .example-q.q-confirming {
+  background: rgba(34,197,94,0.06); border-left-color: var(--green-status);
+}
+.slide-light .example-q, .slide-white .example-q {
+  background: var(--mint);
+  border-left-color: var(--green);
+}
+.example-q .q-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--green-status);
+  margin-bottom: 6px;
+}
+.example-q.q-advancing .q-label { color: var(--blue-accent); }
+.example-q.q-confirming .q-label { color: var(--green-status); }
+.slide-light .example-q.q-advancing .q-label, .slide-white .example-q.q-advancing .q-label { color: var(--blue-accent); }
+.slide-light .example-q.q-confirming .q-label, .slide-white .example-q.q-confirming .q-label { color: #15803d; }
+.slide-light .example-q .q-label, .slide-white .example-q .q-label { color: var(--green); }
+
+.callout {
+  padding: 24px 32px;
+  border-radius: 10px;
+  margin-top: 24px;
+  font-size: 17px;
+  line-height: 1.6;
+}
+.callout-dark { background: var(--dark-green); color: rgba(255,255,255,0.9); border-left: 3px solid var(--green-status); }
+.callout-warn { background: var(--warn-bg); color: var(--warn-text); border-left: 3px solid var(--amber); }
+.callout-success { background: var(--success-bg); color: var(--success-text); border-left: 3px solid var(--green-status); }
+.callout strong { font-weight: 600; }
+
+.flow-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+.flow-chip {
+  background: var(--green);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.flow-chip.highlight { background: var(--green-status); }
+.flow-arrow {
+  color: rgba(255,255,255,0.5);
+  font-size: 22px;
+}
+.slide-light .flow-arrow, .slide-white .flow-arrow {
+  color: var(--text-faint);
+}
+
+/* ===== ARC TABLE ===== */
+.arc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 16px;
+  margin-top: 20px;
+}
+.arc-table th {
+  background: var(--green);
+  color: white;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.arc-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-light);
+  vertical-align: top;
+  line-height: 1.5;
+  font-weight: 300;
+}
+.arc-table tr:nth-child(even) td { background: var(--light-mint); }
+.arc-table .mtg-label {
+  font-weight: 600;
+  color: var(--green);
+  white-space: nowrap;
+  font-size: 14px;
+  min-width: 160px;
+}
+.arc-table .belief-col {
+  color: var(--green);
+  font-style: italic;
+  font-weight: 400;
+  max-width: 320px;
+}
+.arc-table .highlight-belief {
+  background: rgba(34,197,94,0.10);
+  font-weight: 500;
+  color: var(--deep-green);
+}
+.arc-table .stage-label {
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* ===== PAIN LADDER ===== */
+.ladder {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-width: 900px;
+}
+.ladder-step {
+  display: flex;
+  align-items: stretch;
+}
+.ladder-depth {
+  width: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 24px;
+  color: white;
+  flex-shrink: 0;
+}
+.ladder-depth.depth1 { background: var(--green); border-radius: 10px 0 0 0; }
+.ladder-depth.depth2 { background: #1a5e3d; }
+.ladder-depth.depth3 { background: var(--green-status); border-radius: 0 0 0 10px; }
+.ladder-content {
+  flex: 1;
+  padding: 22px 28px;
+  border: 1px solid var(--border-light);
+  border-left: none;
+}
+.ladder-step:first-child .ladder-content { border-radius: 0 10px 0 0; }
+.ladder-step:last-child .ladder-content { border-radius: 0 0 10px 0; }
+.ladder-content .depth-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 6px;
+}
+.ladder-content p {
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+.ladder-content .question {
+  font-style: italic;
+  color: var(--deep-green);
+  font-weight: 400;
+}
+/* Dark slide overrides for Pain Ladder */
+.slide-dark .ladder-content {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.15);
+}
+.slide-dark .ladder-content .depth-label {
+  color: #4ade80;
+}
+.slide-dark .ladder-content p {
+  color: rgba(255,255,255,0.9);
+}
+.slide-dark .ladder-content .question {
+  color: rgba(255,255,255,0.95);
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: var(--green-status);
+  transition: width 0.4s ease;
+  z-index: 100;
+}
+
+/* Slide counter */
+.slide-counter {
+  position: fixed;
+  bottom: 16px;
+  right: 24px;
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.45);
+  z-index: 100;
+  letter-spacing: 1px;
+}
+
+/* Nav hint */
+.nav-hint {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.35);
+  z-index: 100;
+  letter-spacing: 1px;
+  transition: opacity 0.5s;
+}
+
+/* ===== HUMOR ===== */
+.humor {
+  font-size: 15px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--text-faint);
+  margin-top: 16px;
+}
+.slide-dark .humor { color: rgba(255,255,255,0.55); }
+
+/* ===== COMPARE GRID — DARK SLIDE FIX ===== */
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 20px;
+}
+.compare-col {
+  padding: 32px;
+  border-radius: 12px;
+}
+.compare-col.col-before {
+  background: rgba(239,68,68,0.06);
+  border: 1px solid rgba(239,68,68,0.15);
+}
+.compare-col.col-after {
+  background: rgba(34,197,94,0.06);
+  border: 1px solid rgba(34,197,94,0.15);
+}
+/* Dark slide overrides for compare grid */
+.slide-dark .compare-col.col-before {
+  background: rgba(239,68,68,0.12);
+  border: 1px solid rgba(239,68,68,0.3);
+}
+.slide-dark .compare-col.col-after {
+  background: rgba(34,197,94,0.12);
+  border: 1px solid rgba(34,197,94,0.3);
+}
+.compare-col h3 {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.compare-col.col-before h3 { color: var(--red); }
+.compare-col.col-after h3 { color: var(--green-status); }
+.slide-dark .compare-col.col-before h3 { color: #f87171; }
+.slide-dark .compare-col.col-after h3 { color: #4ade80; }
+.compare-col ul {
+  list-style: none;
+  padding: 0;
+}
+.compare-col li {
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.6;
+  padding: 8px 0;
+  color: var(--text-secondary);
+}
+.slide-dark .compare-col li {
+  color: rgba(255,255,255,0.9);
+}
+.compare-col li::before {
+  content: "→ ";
+  color: var(--text-faint);
+}
+.slide-dark .compare-col li::before {
+  color: rgba(255,255,255,0.5);
+}
+
+/* ===== BELIEF SHIFT ===== */
+.belief-shift {
+  font-size: 16px;
+  font-weight: 300;
+  color: var(--text-muted);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+.slide-dark .belief-shift { color: rgba(255,255,255,0.7); }
+
+/* ===== BIG STAT ===== */
+.big-stat {
+  text-align: center;
+  margin: 16px 0;
+}
+.big-stat .number {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 88px;
+  font-weight: 300;
+  color: var(--green-status);
+  line-height: 1;
+}
+.big-stat .label {
+  font-size: 17px;
+  font-weight: 300;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+.slide-dark .big-stat .label { color: rgba(255,255,255,0.7); }
+
+/* ===== GAP CARD ===== */
+.gap-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 28px;
+}
+.gap-card h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--amber);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.gap-card p {
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.85);
+}
+.slide-light .gap-card, .slide-white .gap-card {
+  background: white;
+  border: 1px solid var(--border-light);
+}
+.slide-light .gap-card p, .slide-white .gap-card p {
+  color: var(--text-muted);
+}
+
+/* ===== SECTION DIVIDER ===== */
+.section-divider {
+  text-align: center;
+  padding-top: 20px;
+}
+.section-divider .section-num {
+  font-size: 80px;
+  font-weight: 200;
+  color: var(--green-status);
+  line-height: 1;
+  margin-bottom: 14px;
+}
+.section-divider h2 {
+  font-size: 56px !important;
+  text-align: center;
+}
+.section-divider .lead {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* ===== SCROLLABLE ===== */
+.slide.scrollable {
+  justify-content: flex-start;
+  padding-top: 50px;
+}
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: COVER -->
+<div class="slide slide-cover active" id="slide-1">
+  <h1>The Questions<br>That Close Deals</h1>
+  <div class="subtitle">Small improvements that lead to big results</div>
+  <div class="meta">Maybern — Sales Training — 2026</div>
+</div>
+
+<!-- SLIDE 2: HUMANS RUN ON STORIES -->
+<div class="slide slide-dark" id="slide-2">
+  <h2>Humans Run on Stories</h2>
+  <div class="lead">Every purchase decision is a story your buyer tells themselves. Our job is to help write the next chapter.</div>
+  <div class="grid-2">
+    <div class="card anim-left d1">
+      <div class="card-num">85%</div>
+      <h3>Decisions Are Emotional</h3>
+      <p>Harvard research shows buyers decide emotionally, then justify rationally.</p>
+    </div>
+    <div class="card anim-right d2">
+      <div class="card-num">12</div>
+      <h3>Belief Shifts to Close</h3>
+      <p>Our sales cycle maps to 12 meetings, each requiring one belief shift.</p>
+    </div>
+  </div>
+  <div class="humor anim-fade d3">Think of yourself less as a "closer" and more as a "story editor."</div>
+</div>
+
+<!-- SLIDE 3: EVERY SALE IS A STORY ARC -->
+<div class="slide slide-dark" id="slide-3">
+  <h2>Every Sale Is a Story Arc</h2>
+  <div class="lead">Each meeting moves the buyer through a narrative — from unaware of the problem, to believing we're the answer.</div>
+  <div class="flow-row anim-up d1">
+    <div class="flow-chip">Discovery</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-chip">Pain</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-chip">Vision</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-chip highlight">Proof</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-chip">Consensus</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-chip highlight">Close</div>
+  </div>
+  <div class="callout callout-dark anim-fade d2">
+    <strong>Key insight:</strong> If you skip a belief shift, the deal doesn't die immediately — it stalls two meetings later.
+  </div>
+</div>
+
+<!-- SLIDE 4: DEFINING THE TWO ENGINES -->
+<div class="slide slide-dark" id="slide-4">
+  <h2>Two Things Drive Every Deal Forward</h2>
+  <div class="lead">Every meeting in the arc has two engines. Understand these and you'll never wonder <em>"what was the point of that call?"</em></div>
+
+  <div style="display:flex; gap:48px; margin-top:40px; max-width:960px;">
+
+    <!-- BELIEF SHIFT -->
+    <div class="anim-up d1" style="flex:1; background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.25); border-radius:16px; padding:36px 32px;">
+      <div style="display:flex; align-items:center; gap:14px; margin-bottom:18px;">
+        <div style="width:44px;height:44px;border-radius:50%;background:var(--green-status);display:flex;align-items:center;justify-content:center;font-size:20px;color:white;">↻</div>
+        <div style="font-size:22px;font-weight:700;color:white;">Belief Shift</div>
+      </div>
+      <div style="font-size:16px;line-height:1.7;color:rgba(255,255,255,0.85);">
+        The change in what the buyer <strong>believes</strong> after a meeting that they didn't believe before it.<br><br>
+        <span style="color:var(--green-status);font-weight:600;">Example:</span><br>
+        <em style="color:rgba(255,255,255,0.7);">Before the Value Creation workshop:</em> "We're probably fine."<br>
+        <em style="color:rgba(255,255,255,0.7);">After:</em> "The cost of doing nothing is real and material."
+      </div>
+    </div>
+
+    <!-- PROOF / ACTION -->
+    <div class="anim-up d2" style="flex:1; background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.25); border-radius:16px; padding:36px 32px;">
+      <div style="display:flex; align-items:center; gap:14px; margin-bottom:18px;">
+        <div style="width:44px;height:44px;border-radius:50%;background:var(--blue-accent);display:flex;align-items:center;justify-content:center;font-size:20px;color:white;">✓</div>
+        <div style="font-size:22px;font-weight:700;color:white;">Proof of Shift</div>
+      </div>
+      <div style="font-size:16px;line-height:1.7;color:rgba(255,255,255,0.85);">
+        The <strong>observable action</strong> the buyer takes that proves the belief actually landed — not just a head-nod.<br><br>
+        <span style="color:var(--blue-accent);font-weight:600;">Example:</span><br>
+        <em style="color:rgba(255,255,255,0.7);">They don't just say "makes sense" —</em><br>
+        They lock a Process Review date and articulate ROI internally to their boss.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="callout callout-dark anim-fade d3" style="margin-top:36px;">
+    <strong>Why this matters:</strong> If you can't name the belief shift for a meeting, you don't know why you're having it. If you can't spot the proof, you don't know if it worked.
+  </div>
+</div>
+
+<!-- SLIDE 6: ANIMATED BELIEF ARC -->
+<div class="slide slide-dark" id="slide-5">
+  <h2>The Belief Arc</h2>
+  <div class="lead">12 meetings. 12 belief shifts. Each one builds on the last — skip one, and the arc breaks.</div>
+  <div class="belief-arc-wrap anim-fade d1">
+    <svg class="arc-path-svg" viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid meet">
+      <path class="arc-path-line" d="M 60,340 C 120,340 140,310 180,280 C 220,250 260,220 320,195 C 380,170 420,150 480,130 C 540,110 580,95 640,80 C 700,65 740,55 800,48 C 860,42 900,40 960,42 C 1020,45 1060,55 1100,70 C 1120,78 1135,86 1145,95" fill="none" stroke="rgba(34,197,94,0.3)" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+
+    <!-- Node 1: Initial Call -->
+    <div class="arc-node" style="left:42px;top:322px;animation-delay:0.5s">1</div>
+    <div class="arc-label" style="left:0px;top:362px;animation-delay:0.6s;width:90px"><span class="arc-mtg">Initial Call</span>Structural risk exists</div>
+
+    <!-- Node 2: Initial Demo -->
+    <div class="arc-node" style="left:138px;top:262px;animation-delay:0.7s">2</div>
+    <div class="arc-label" style="left:93px;top:302px;animation-delay:0.8s"><span class="arc-mtg">Initial Demo</span>Credible alternative</div>
+
+    <!-- Node 3: Coordination -->
+    <div class="arc-node" style="left:234px;top:212px;animation-delay:0.9s">3</div>
+    <div class="arc-label" style="left:189px;top:252px;animation-delay:1.0s"><span class="arc-mtg">Coordination</span>Defined scope &amp; roles</div>
+
+    <!-- Node 4: Value Creation -->
+    <div class="arc-node" style="left:330px;top:170px;animation-delay:1.1s">4</div>
+    <div class="arc-label" style="left:285px;top:210px;animation-delay:1.2s"><span class="arc-mtg">Value Creation</span>Cost of inaction is real</div>
+
+    <!-- Node 5: Tech File Review -->
+    <div class="arc-node" style="left:428px;top:132px;animation-delay:1.3s">5</div>
+    <div class="arc-label" style="left:383px;top:172px;animation-delay:1.4s"><span class="arc-mtg">Tech File</span>Data is ready</div>
+
+    <!-- Node 6: Process Review -->
+    <div class="arc-node" style="left:524px;top:102px;animation-delay:1.5s">6</div>
+    <div class="arc-label" style="left:479px;top:142px;animation-delay:1.6s"><span class="arc-mtg">Process Review</span>Fragilities mirror us</div>
+
+    <!-- Node 7: Demo Prep -->
+    <div class="arc-node" style="left:620px;top:78px;animation-delay:1.7s">7</div>
+    <div class="arc-label" style="left:575px;top:30px;animation-delay:1.8s"><span class="arc-mtg">Demo Prep</span>Team is prepared</div>
+
+    <!-- Node 8: Tailored Demo -->
+    <div class="arc-node" style="left:716px;top:60px;animation-delay:1.9s">8</div>
+    <div class="arc-label" style="left:671px;top:8px;animation-delay:2.0s"><span class="arc-mtg">Tailored Demo</span>Path to purchase</div>
+
+    <!-- Node 9: Future State -->
+    <div class="arc-node" style="left:812px;top:48px;animation-delay:2.1s">9</div>
+    <div class="arc-label" style="left:767px;top:88px;animation-delay:2.2s"><span class="arc-mtg">Future State</span>Can see live on Maybern</div>
+
+    <!-- Node 10: Proposal -->
+    <div class="arc-node" style="left:908px;top:44px;animation-delay:2.3s">10</div>
+    <div class="arc-label" style="left:860px;top:84px;animation-delay:2.4s"><span class="arc-mtg">Proposal</span>Terms match value</div>
+
+    <!-- Node 11: Legal -->
+    <div class="arc-node" style="left:1004px;top:48px;animation-delay:2.5s">11</div>
+    <div class="arc-label" style="left:959px;top:88px;animation-delay:2.6s"><span class="arc-mtg">Legal</span>Nothing blocks signing</div>
+
+    <!-- Node 12: Implementation -->
+    <div class="arc-node" style="left:1100px;top:60px;animation-delay:2.7s">12</div>
+    <div class="arc-label" style="left:1052px;top:100px;animation-delay:2.8s"><span class="arc-mtg">Implementation</span>Context to deliver</div>
+
+    <!-- Start / End markers -->
+    <div class="arc-start-label" style="left:20px;top:290px">Unaware</div>
+    <div class="arc-end-label" style="left:1080px;top:28px">Closed</div>
+  </div>
+</div>
+
+<!-- SLIDE 6: 12 MEETINGS TABLE -->
+<div class="slide slide-light scrollable" id="slide-6">
+  <div class="section-label anim-fade">THE FULL ARC</div>
+  <h2>12 Meetings. 12 Belief Shifts.</h2>
+  <div class="lead">Each row is a meeting in the typical Maybern enterprise deal. The belief shift is what the buyer must believe before the next meeting matters.</div>
+  <table class="arc-table anim-up d1">
+    <thead>
+      <tr><th>Stage</th><th>Meeting</th><th class="belief-col">Belief Shift</th><th>Proof of Shift</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="stage-label">Connectivity</td><td class="mtg-label">Initial Call</td><td class="belief-col">I have a structural risk I haven't fully examined.</td><td>Agrees to Initial Demo with named senior finance stakeholder</td></tr>
+      <tr><td class="stage-label">Opportunity Qualification</td><td class="mtg-label">Initial Demo</td><td class="belief-col">There's a credible alternative worth evaluating seriously.</td><td>Agrees to Coordination Meeting with evaluation stakeholders identified</td></tr>
+      <tr><td class="stage-label">Opportunity Qualification</td><td class="mtg-label">Coordination Mtg</td><td class="belief-col">A proper evaluation requires defined scope, roles, and timeline.</td><td>NDA/data-access locked; MAP agreed with dates</td></tr>
+      <tr><td class="stage-label">Opportunity Qualification</td><td class="mtg-label">Value Creation</td><td class="belief-col">The cost of inaction is quantifiable and material.</td><td>Locks Process Review date; champion can articulate ROI internally</td></tr>
+      <tr><td class="stage-label">File Review</td><td class="mtg-label">Tech File Review</td><td class="belief-col">Our data is ready (or knowably close) for a tailored demo.</td><td>Dataset finalized for Tailored Demo</td></tr>
+      <tr><td class="stage-label">File Review</td><td class="mtg-label">Process Review</td><td class="belief-col highlight-belief">Our current process has specific fragilities that mirror what Maybern solves.</td><td>Client aligns on future state activities and confirm EB to join Tailored demo with tailored agenda</td></tr>
+      <tr><td class="stage-label">Technical &amp; Tailored Demo</td><td class="mtg-label">Demo Prep (Int)</td><td class="belief-col highlight-belief">We need to show up prepared so the exec team sees their world.</td><td>Team roles, storyline, timing confirmed for Tailored Demo</td></tr>
+      <tr><td class="stage-label">Technical &amp; Tailored Demo</td><td class="mtg-label">Tailored Demo</td><td class="belief-col">This works for our specific configuration — the path to purchase is real.</td><td>Path to purchase confirmed; proof points documented</td></tr>
+      <tr><td class="stage-label">Technical &amp; Tailored Demo</td><td class="mtg-label">Future State Wkshp</td><td class="belief-col highlight-belief">I can see what "live on Maybern" looks like for my team.</td><td>Green-light to draft Proposal; success metrics agreed</td></tr>
+      <tr><td class="stage-label">Proposal &amp; Negotiation</td><td class="mtg-label">Proposal Review</td><td class="belief-col">The commercial terms match the value we've validated.</td><td>Verbal alignment on scope/pricing/support; timeline locked</td></tr>
+      <tr><td class="stage-label">Paper Process</td><td class="mtg-label">Legal Review</td><td class="belief-col">Every open item is resolvable — nothing blocks signature.</td><td>Handshake on final documents; signing date confirmed</td></tr>
+      <tr><td class="stage-label">Closed</td><td class="mtg-label">Implementation</td><td class="belief-col">The implementation team has the context to deliver what we bought.</td><td>Kickoff scheduled; implementation plan confirmed</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- SLIDE 7: WHY A FRAMEWORK — COMPARE GRID (CONTRAST FIXED) -->
+<div class="slide slide-dark" id="slide-7">
+  <h2>Why a Framework?</h2>
+  <div class="lead">This isn't a script. It's about giving our prospects — and ourselves — a better story every time.</div>
+  <div class="compare-grid">
+    <div class="compare-col col-before anim-left d1">
+      <h3>Without a Framework</h3>
+      <ul>
+        <li>Forecasting is guesswork</li>
+        <li>Belief shifts happen accidentally</li>
+        <li>New reps take 2-3x longer to ramp</li>
+        <li>Deal reviews become "how do you feel?"</li>
+      </ul>
+    </div>
+    <div class="compare-col col-after anim-right d2">
+      <h3>With a Framework</h3>
+      <ul>
+        <li>Forecasting is based on proof actions</li>
+        <li>Belief shifts are designed into every meeting</li>
+        <li>New reps have a playbook from day one</li>
+        <li>Deal reviews ask "did the proof action happen?"</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: WHY WE BUILT THIS -->
+<div class="slide slide-dark" id="slide-8">
+  <div class="section-label anim-fade" style="color: var(--green-status);">THE STANDARD</div>
+  <h2>Why We Built This</h2>
+  <div class="lead">This isn't a suggestion — it's how we sell now.</div>
+  <div class="grid-2" style="margin-top: 28px;">
+    <div class="card anim-up d1">
+      <h3>Built from Our Best Deals</h3>
+      <p>Your leadership team analyzed our highest-performing deals and identified the exact questions that drove belief shifts at each stage. These aren't generic — they're mapped to our sales process, our buyers, and our product.</p>
+    </div>
+    <div class="card anim-up d2">
+      <h3>How We'll Get There Together</h3>
+      <p>Yes, we want you to learn these questions — really learn them. We'll create flash cards and run reps so they become second nature, not something you're reading off a screen mid-call. We're also building meeting-level scorecards in Gong so your managers can coach you in real time. The goal is fluency, not compliance — we're investing in tools that make you sharper, not checkboxes that slow you down.</p>
+    </div>
+  </div>
+  <div class="callout callout-warn anim-up d3" style="max-width: 860px; margin-top: 20px;">
+    <strong>This matters:</strong> Consistent questions across the team means better data, better coaching, and better forecasting — which means leadership can advocate for bigger territories, better tools, and more resources for you.
+  </div>
+</div>
+
+<!-- SLIDE 9: NOTE FOR EXPERIENCED REPS -->
+<div class="slide slide-dark" id="slide-9">
+  <h2>A Note for Experienced Reps</h2>
+  <div class="lead">You already do most of this instinctively — that's why you're great.</div>
+  <div class="callout callout-dark anim-up d1" style="max-width:900px;">
+    <strong>This framework takes what you do naturally</strong> and makes it repeatable, coachable, and forecastable. Think of it as documenting the best version of your own approach.
+  </div>
+  <div class="humor anim-fade d2">Stage progression = evidence the buyer moved, not activity you logged.</div>
+</div>
+
+<!-- SLIDE 10: TWO TYPES — OVERVIEW -->
+<div class="slide slide-light" id="slide-10">
+  <div class="section-label anim-fade">THE TOOLKIT</div>
+  <h2>Two Types of Questions</h2>
+  <div class="lead">Every question you ask falls into one of two categories. Knowing which you're using — and when — is the whole game.</div>
+  <div class="grid-2">
+    <div class="card anim-left d1" style="border-left: 4px solid var(--blue-accent); background: linear-gradient(135deg, rgba(59,130,246,0.08), transparent);">
+      <h3 style="color: var(--blue-accent);">Advancing Questions</h3>
+      <p>Move the deal forward. Open new territory. Create urgency by uncovering what the buyer hasn't considered.</p>
+    </div>
+    <div class="card anim-right d2" style="border-left: 4px solid var(--green-status); background: linear-gradient(135deg, rgba(34,197,94,0.08), transparent);">
+      <h3 style="color: var(--green-status);">Confirming Questions</h3>
+      <p>Lock in progress. Verify understanding. Ensure the buyer has internalized the last belief shift before moving on.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: ADVANCING QUESTIONS DEEP DIVE -->
+<div class="slide slide-dark" id="slide-11">
+  <h2>Advancing Questions</h2>
+  <div class="lead">These open new territory and create momentum. They're the engine of deal progression.</div>
+  <div class="grid-3">
+    <div class="card anim-up d1">
+      <div class="card-num">01</div>
+      <h3>Uncover Hidden Pain</h3>
+      <p>"What happens downstream when that process breaks?"</p>
+    </div>
+    <div class="card anim-up d2">
+      <div class="card-num">02</div>
+      <h3>Challenge Assumptions</h3>
+      <p>"What if the real bottleneck isn't where you think it is?"</p>
+    </div>
+    <div class="card anim-up d3">
+      <div class="card-num">03</div>
+      <h3>Create Vision</h3>
+      <p>"If this worked perfectly, what would your team's day look like?"</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: CONFIRMING QUESTIONS DEEP DIVE -->
+<div class="slide slide-light" id="slide-12">
+  <div class="section-label anim-fade">CONFIRMING QUESTIONS</div>
+  <h2>Lock In the Shift</h2>
+  <div class="lead">Without confirming questions, buyers nod along but never internalize. These make belief shifts stick.</div>
+  <div class="grid-2">
+    <div class="card anim-left d1">
+      <h3>Verify Understanding</h3>
+      <p>"Just to make sure I have this right — the main issue is X impacting Y?"</p>
+    </div>
+    <div class="card anim-right d2">
+      <h3>Test Commitment</h3>
+      <p>"If we could solve that, would it be worth bringing your VP into the conversation?"</p>
+    </div>
+  </div>
+  <div class="callout callout-success anim-fade d3">
+    <strong>The movie test:</strong> In great films, every scene changes something. If you remove it and nothing changes, it shouldn't be there. Apply this to meetings — every meeting should shift a belief.
+  </div>
+</div>
+
+<!-- SLIDE 13: M1 — INITIAL CALL QUESTIONS -->
+<div class="slide slide-white" id="slide-13">
+  <div class="section-label anim-fade">INITIAL CALL</div>
+  <h2>Initial Call Questions</h2>
+  <div class="lead">Belief shift: "I have a structural risk I haven't fully examined."</div>
+  <div class="grid-2">
+    <div class="example-q q-advancing anim-up d1">
+      <div class="q-label">Advancing</div>
+      "Walk me through who actually owns the waterfall logic today — and what happens when that person is unavailable for a quarter-end."
+    </div>
+    <div class="example-q q-advancing anim-up d2">
+      <div class="q-label">Advancing</div>
+      "When an LP asks you to defend a specific calculation, what does the process look like to trace it back to the source?"
+    </div>
+    <div class="example-q q-advancing anim-up d3">
+      <div class="q-label">Advancing</div>
+      "What would happen to your next distribution cycle if your lead fund accountant left tomorrow?"
+    </div>
+    <div class="example-q q-confirming anim-up d4">
+      <div class="q-label">Confirming</div>
+      "Based on what we've discussed, it sounds like there are a few structural risks worth examining more closely — would you agree?"
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 14: M1 — MORE QUESTIONS + CALLOUT -->
+<div class="slide slide-white" id="slide-14">
+  <div class="section-label anim-fade">INITIAL CALL — CONTINUED</div>
+  <h2>Going Deeper on the Initial Call</h2>
+  <div class="lead">The best first calls feel like a conversation, not an interrogation.</div>
+  <div class="grid-2">
+    <div class="example-q q-advancing anim-up d1">
+      <div class="q-label">Advancing</div>
+      "When you think about scaling from your current fund count to double that, where does the process start to feel fragile?"
+    </div>
+    <div class="example-q q-advancing anim-up d2">
+      <div class="q-label">Advancing</div>
+      "If you fast-forward six quarters, what part of your current process worries you most?"
+    </div>
+    <div class="example-q q-confirming anim-up d3">
+      <div class="q-label">Confirming</div>
+      "If we could show you how firms with similar complexity have addressed these exact gaps, would it be worth 45 minutes with your CFO / Head of Fund Ops?"
+    </div>
+  </div>
+  <div class="callout callout-warn anim-fade d4">
+    <strong>Balance:</strong> The first call is discovery-led, but it's also where you lightly position Maybern as creating its own category — the performance book of record. Plant the seed, don't sell the tree. Your job is to learn enough to earn the second meeting while leaving them curious about a category they didn't know existed.
+  </div>
+</div>
+
+<!-- SLIDE 15: PAIN LADDER — CONCEPT -->
+<div class="slide slide-dark" id="slide-15">
+  <div class="section-label anim-fade" style="color: var(--green-status);">TECHNIQUE</div>
+  <h2>The Pain Ladder</h2>
+  <div class="lead">Three levels of depth. Most reps stay at Level 1. The best reps live at Level 3.</div>
+  <div class="ladder anim-up d1">
+    <div class="ladder-step">
+      <div class="ladder-depth depth1">1</div>
+      <div class="ladder-content">
+        <div class="depth-label">Surface</div>
+        <p>"What challenges are you facing?"</p>
+      </div>
+    </div>
+    <div class="ladder-step">
+      <div class="ladder-depth depth2">2</div>
+      <div class="ladder-content">
+        <div class="depth-label">Impact</div>
+        <p>"What happens to the team when that breaks?"</p>
+      </div>
+    </div>
+    <div class="ladder-step">
+      <div class="ladder-depth depth3">3</div>
+      <div class="ladder-content">
+        <div class="depth-label">Personal</div>
+        <p>"How does that affect your ability to hit your goals?"</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 16: PAIN LADDER — APPLIED EXAMPLE -->
+<div class="slide slide-light" id="slide-16">
+  <div class="section-label anim-fade">PAIN LADDER IN ACTION</div>
+  <h2>Pain Ladder Applied</h2>
+  <div class="lead">Here's the same technique in a real Maybern conversation flow.</div>
+  <div class="example-q anim-up d1">
+    <div class="q-label">Level 1 — Surface</div>
+    "What's your biggest challenge with fund administration right now?"
+  </div>
+  <div class="example-q anim-up d2">
+    <div class="q-label">Level 2 — Impact</div>
+    "When capital calls are delayed, how does that ripple through to your LPs?"
+  </div>
+  <div class="example-q anim-up d3">
+    <div class="q-label">Level 3 — Personal</div>
+    "What does that mean for your relationship with those LPs at year-end review?"
+  </div>
+  <div class="callout callout-success anim-fade d4">
+    <strong>Why it works:</strong> Level 3 questions connect the business problem to personal stakes. That's where urgency lives.
+  </div>
+</div>
+
+<!-- SLIDE 17: PAIN LADDER — HUMOR / TIP -->
+<div class="slide slide-dark" id="slide-17">
+  <h2>Going to Level 3</h2>
+  <div class="lead">The trick isn't asking harder questions. It's earning permission to go deeper.</div>
+  <div class="grid-2">
+    <div class="card anim-left d1">
+      <h3>How to Earn Depth</h3>
+      <p>Reflect back what they said at Level 1 before asking Level 2. Acknowledge the impact before going personal.</p>
+    </div>
+    <div class="card anim-right d2">
+      <h3>Watch for Signals</h3>
+      <p>When a buyer pauses, sighs, or says "honestly..." — you've hit something real. Slow down and explore.</p>
+    </div>
+  </div>
+  <div class="humor anim-fade d3">If your discovery sounds like a tax audit, you haven't earned Level 3.</div>
+</div>
+
+<!-- SLIDE 18: M4 — VALUE CREATION WORKSHOP QUESTIONS -->
+<div class="slide slide-white" id="slide-18">
+  <div class="section-label anim-fade">VALUE CREATION WORKSHOP</div>
+  <h2>Value Creation Workshop Questions</h2>
+  <div class="lead">Belief shift: "The cost of inaction is quantifiable and material — this isn't just an efficiency play."</div>
+  <div class="grid-2">
+    <div class="example-q q-advancing anim-up d1">
+      <div class="q-label">Advancing</div>
+      "How many person-hours per quarter does your team spend on waterfall calculations, validation, and LP-facing reconciliation?"
+    </div>
+    <div class="example-q q-advancing anim-up d2">
+      <div class="q-label">Advancing</div>
+      "If you translated those hours into fully-loaded annual cost, what does that number look like?"
+    </div>
+    <div class="example-q q-advancing anim-up d3">
+      <div class="q-label">Advancing</div>
+      "What happens to that number if your fund count doubles in the next 18 months — does it scale linearly or worse?"
+    </div>
+    <div class="example-q q-confirming anim-up d4">
+      <div class="q-label">Confirming</div>
+      "Now that we've quantified the cost side — does this feel like a material enough problem to warrant a serious evaluation?"
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 19: M5 PROCESS REVIEW & M8 TAILORED DEMO QUESTIONS -->
+<div class="slide slide-white" id="slide-19">
+  <div class="section-label anim-fade">MID-CYCLE QUESTIONS</div>
+  <h2>Process Review & Tailored Demo</h2>
+  <div class="lead">Two pivotal meetings: mapping fragilities (M5) and proving it works with real data (M8).</div>
+  <div class="grid-2">
+    <div class="card anim-left d1">
+      <h3>Process Review</h3>
+      <div class="example-q q-advancing" style="margin-top:12px;">
+        <div class="q-label">Advancing</div>
+        "Let's map your process end-to-end: starting from when fund terms are set, walk me through every step until an LP receives their distribution statement."
+      </div>
+      <div class="example-q q-confirming">
+        <div class="q-label">Confirming</div>
+        "Now that we've mapped this out, do the fragility points we identified feel accurate — or are there others?"
+      </div>
+    </div>
+    <div class="card anim-right d2">
+      <h3>Tailored Demo</h3>
+      <div class="example-q q-advancing" style="margin-top:12px;">
+        <div class="q-label">Advancing</div>
+        "You're looking at your actual fund structures in the system — does the output match what you'd expect to see?"
+      </div>
+      <div class="example-q q-confirming">
+        <div class="q-label">Confirming</div>
+        "Based on what you've seen with your own data, does this feel like a real solution for your team — or are there gaps?"
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 20: MIND THE GAPS — OVERVIEW -->
+<div class="slide slide-dark" id="slide-20">
+  <div class="section-label anim-fade" style="color: var(--green-status);">WARNING SIGNS</div>
+  <h2>Mind the Gaps</h2>
+  <div class="lead">These are the top deal-stalling patterns we see. Each is a missed or incomplete belief shift.</div>
+  <div class="grid-3">
+    <div class="gap-card anim-up d1">
+      <h4>Champion Gap</h4>
+      <p>You're selling to someone who can't buy. Find the economic buyer early.</p>
+    </div>
+    <div class="gap-card anim-up d2">
+      <h4>Pain Gap</h4>
+      <p>Buyer acknowledges the problem but hasn't quantified the cost. No urgency.</p>
+    </div>
+    <div class="gap-card anim-up d3">
+      <h4>Consensus Gap</h4>
+      <p>Your champion is sold, but they can't convince their peers. Need multi-threading.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 21: MIND THE GAPS — MORE -->
+<div class="slide slide-dark" id="slide-21">
+  <h2>More Deal Gaps</h2>
+  <div class="lead">Two more patterns that stall deals in the late stages.</div>
+  <div class="grid-2">
+    <div class="gap-card anim-left d1">
+      <h4>Proof Gap</h4>
+      <p>Buyer likes the pitch but hasn't seen evidence it works for their use case. Offer a reference or pilot.</p>
+    </div>
+    <div class="gap-card anim-right d2">
+      <h4>Timing Gap</h4>
+      <p>Everything's aligned but there's no trigger event. Help them build a business case with a deadline.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 22: GAP CLOSERS — CHAMPION & PAIN -->
+<div class="slide slide-light" id="slide-22">
+  <div class="section-label anim-fade">CLOSING THE GAPS</div>
+  <h2>Gap Closing Questions</h2>
+  <div class="lead">When you spot a gap, these questions from the framework can help close it.</div>
+  <div class="grid-2">
+    <div class="card anim-left d1">
+      <h3>Champion Gap</h3>
+      <div class="example-q q-advancing" style="margin-top:12px;">
+        <div class="q-label">Advancing</div>
+        "Who has the authority to sign off on a new system or process change in fund operations — and what does their approval process look like?"
+      </div>
+      <div class="example-q q-confirming">
+        <div class="q-label">Confirming</div>
+        "What would need to be true for you to feel comfortable recommending that next step internally?"
+      </div>
+    </div>
+    <div class="card anim-right d2">
+      <h3>Pain Gap</h3>
+      <div class="example-q q-advancing" style="margin-top:12px;">
+        <div class="q-label">Advancing</div>
+        "How many person-hours per quarter does your team spend on waterfall calculations, validation, and LP-facing reconciliation?"
+      </div>
+      <div class="example-q q-confirming">
+        <div class="q-label">Confirming</div>
+        "Now that we've quantified the cost side — does this feel like a material enough problem to warrant a serious evaluation?"
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 23: GAP CLOSERS — CONSENSUS, PROOF, TIMING -->
+<div class="slide slide-light" id="slide-23">
+  <div class="section-label anim-fade">CLOSING THE GAPS — CONTINUED</div>
+  <h2>More Gap Closers</h2>
+  <div class="grid-3">
+    <div class="card anim-up d1">
+      <h3>Consensus Gap</h3>
+      <div class="example-q q-advancing" style="margin-top:12px;">
+        <div class="q-label">Advancing</div>
+        "If you were to evaluate a platform like this properly, who would need to be involved to make sure nothing gets missed?"
+      </div>
+      <div class="example-q q-confirming">
+        <div class="q-label">Confirming</div>
+        "It sounds like we have the right stakeholders identified — does that feel complete, or is anyone missing?"
+      </div>
+    </div>
+    <div class="card anim-up d2">
+      <h3>Proof Gap</h3>
+      <div class="example-q q-advancing" style="margin-top:12px;">
+        <div class="q-label">Advancing</div>
+        "Looking at the files you've shared, how well do these represent the full range of waterfall tier structures across your funds?"
+      </div>
+      <div class="example-q q-confirming">
+        <div class="q-label">Confirming</div>
+        "Based on what we've reviewed, do you feel confident the dataset captures enough complexity for a realistic demo?"
+      </div>
+    </div>
+    <div class="card anim-up d3">
+      <h3>Timing Gap</h3>
+      <div class="example-q q-advancing" style="margin-top:12px;">
+        <div class="q-label">Advancing</div>
+        "Is there an event on your calendar — a fundraise, an audit, a fund launch — that creates natural urgency around resolving this?"
+      </div>
+      <div class="example-q q-confirming">
+        <div class="q-label">Confirming</div>
+        "If we mapped out a timeline with clear milestones and owners, would your team be able to commit to that cadence?"
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 24: THE PLAYBOOK -->
+<div class="slide slide-dark" id="slide-24">
+  <div class="section-label anim-fade" style="color: var(--green-status);">PUTTING IT ALL TOGETHER</div>
+  <h2>The Playbook</h2>
+  <div class="lead">Every meeting should follow this rhythm.</div>
+  <div class="flow-row anim-up d1">
+    <div class="flow-chip">Open with Confirming</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-chip highlight">Advance with Depth</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-chip">Close with Confirming</div>
+  </div>
+  <div class="grid-3" style="margin-top: 28px;">
+    <div class="card anim-up d2">
+      <h3>Open</h3>
+      <p>Confirm where you left off. Validate the last belief shift stuck.</p>
+    </div>
+    <div class="card anim-up d3">
+      <h3>Advance</h3>
+      <p>Push into new territory. Use the pain ladder. Uncover what they haven't said.</p>
+    </div>
+    <div class="card anim-up d4">
+      <h3>Close</h3>
+      <p>Confirm the new belief shift. Get a proof action. Set the next meeting.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 25: WHAT'S IN IT FOR YOU -->
+<div class="slide slide-dark" id="slide-25">
+  <div class="section-label anim-fade" style="color: var(--green-status);">WHY THIS MATTERS TO YOU</div>
+  <h2>What's In It For You</h2>
+  <div class="lead">This framework doesn't just help the company — it helps you personally.</div>
+  <div class="grid-2" style="margin-top: 28px;">
+    <div class="card anim-up d1">
+      <h3>For You</h3>
+      <p><strong>Close more deals</strong> — structured questions outperform winging it.</p>
+      <p style="margin-top:10px;"><strong>Waste less time</strong> — surface bad fits early, stop chasing dead deals.</p>
+      <p style="margin-top:10px;"><strong>Earn trust faster</strong> — great questions make you the advisor, not the vendor.</p>
+    </div>
+    <div class="card anim-up d2">
+      <h3>For the Team</h3>
+      <p><strong>Shared language</strong> — sharper deal reviews, faster knowledge transfer.</p>
+      <p style="margin-top:10px;"><strong>Better forecasting</strong> — belief shifts are proof points, not gut feelings.</p>
+      <p style="margin-top:10px;"><strong>Compound learning</strong> — every rep's wins teach the whole team.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 26: THE COMMON TRAP -->
+<div class="slide slide-light" id="slide-26">
+  <h2>The Common Trap</h2>
+  <div class="lead">The biggest risk isn't learning this — it's doing it once and reverting to old habits.</div>
+  <div class="callout callout-warn anim-up d1" style="max-width:900px;">
+    <strong>Real talk:</strong> It takes 8-12 weeks to make this instinctive. The first two weeks will feel awkward. That's normal. Push through it — the results compound.
+  </div>
+  <div class="callout callout-success anim-up d2" style="max-width:900px; margin-top: 16px;">
+    <strong>Accountability hack:</strong> Pair up with another rep. After every meeting, share: "What was my target belief shift? Did I get the proof action?"
+  </div>
+</div>
+
+<!-- SLIDE 28: THE NEW DEAL REVIEW -->
+<div class="slide slide-dark" id="slide-27">
+  <h2>The New Deal Review</h2>
+  <div class="lead">Replace gut-feeling deal reviews with these three questions.</div>
+  <div class="grid-3">
+    <div class="card anim-up d1">
+      <div class="card-num">?</div>
+      <h3>What belief shifted?</h3>
+      <p>Name the specific shift. If you can't, the meeting didn't advance.</p>
+    </div>
+    <div class="card anim-up d2">
+      <div class="card-num">?</div>
+      <h3>What's the proof?</h3>
+      <p>What action did the buyer take that proves the shift? Not words — actions.</p>
+    </div>
+    <div class="card anim-up d3">
+      <div class="card-num">?</div>
+      <h3>What shifts next?</h3>
+      <p>What does the buyer need to believe before the next meeting matters?</p>
+    </div>
+  </div>
+  <div class="humor anim-fade d4">"The deal feels good" is not a forecast. "The buyer shared internal data" is.</div>
+</div>
+
+<!-- SLIDE 29: CHEAT SHEET -->
+<div class="slide slide-white scrollable" id="slide-28">
+  <div class="section-label anim-fade">REFERENCE</div>
+  <h2>Quick Reference Cheat Sheet</h2>
+  <div class="lead">Bookmark this slide. Pull it up before your next meeting.</div>
+  <table class="arc-table anim-up d1">
+    <thead>
+      <tr><th>Meeting</th><th class="belief-col">Target Belief</th><th>Key Question</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="mtg-label">Initial Call</td><td class="belief-col">Structural risk worth examining</td><td>"What prompted you to take this meeting?"</td></tr>
+      <tr><td class="mtg-label">Initial Demo</td><td class="belief-col">Credible alternative worth evaluating</td><td>"Walk me through what happens when it breaks."</td></tr>
+      <tr><td class="mtg-label">Coordination Mtg</td><td class="belief-col">Evaluation needs scope &amp; timeline</td><td>"Who needs to be part of this evaluation?"</td></tr>
+      <tr><td class="mtg-label">Value Creation</td><td class="belief-col">Cost of inaction is material</td><td>"Can you put a number on that?"</td></tr>
+      <tr><td class="mtg-label">Tech File Review</td><td class="belief-col">Our data is ready for a tailored demo</td><td>"What would your IT team need to see?"</td></tr>
+      <tr><td class="mtg-label">Process Review</td><td class="belief-col">Our process has fragilities Maybern solves</td><td>"Walk me through your current workflow end to end."</td></tr>
+      <tr><td class="mtg-label">Demo Prep (Int)</td><td class="belief-col">We need to show execs their world</td><td>"What does the exec team care about most?"</td></tr>
+      <tr><td class="mtg-label">Tailored Demo</td><td class="belief-col">This works for our configuration</td><td>"If we automated 80% of this, what would change?"</td></tr>
+      <tr><td class="mtg-label">Future State Wkshp</td><td class="belief-col">I can see "live on Maybern" for my team</td><td>"What does success look like 90 days after go-live?"</td></tr>
+      <tr><td class="mtg-label">Proposal Review</td><td class="belief-col">Terms match the value we've validated</td><td>"What would you change about this proposal?"</td></tr>
+      <tr><td class="mtg-label">Legal Review</td><td class="belief-col">Every open item is resolvable</td><td>"What's standing between us and a yes?"</td></tr>
+      <tr><td class="mtg-label">Implementation</td><td class="belief-col">Team has context to deliver</td><td>"What does a successful kickoff look like for you?"</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- SLIDE 30: CLOSING -->
+<div class="slide slide-cover" id="slide-29">
+  <h1>Go Shift Some Beliefs.</h1>
+  <div class="subtitle">Questions > Pitches. Always.</div>
+  <div class="meta">Maybern — Sales Training — 2026</div>
+</div>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar" id="progressBar"></div>
+<div class="slide-counter" id="slideCounter">1 / 26</div>
+<div class="nav-hint" id="navHint">← → arrows or click to navigate</div>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  let current = 0;
+  const total = slides.length;
+
+  function resetAnimations(slide) {
+    const animatedEls = slide.querySelectorAll('.anim-up, .anim-left, .anim-right, .anim-scale, .anim-fade, h2, .lead');
+    animatedEls.forEach(function(el) {
+      el.style.animation = 'none';
+      el.offsetHeight; // trigger reflow
+      el.style.animation = '';
+    });
+  }
+
+  function updateSlide() {
+    slides.forEach(function(s, i) {
+      if (i === current) {
+        s.classList.add('active');
+        resetAnimations(s);
+      } else {
+        s.classList.remove('active');
+      }
+    });
+    var pct = ((current + 1) / total) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('slideCounter').textContent = (current + 1) + ' / ' + total;
+
+    var activeSlide = slides[current];
+    var counter = document.getElementById('slideCounter');
+    var hint = document.getElementById('navHint');
+
+    if (activeSlide.classList.contains('slide-light') || activeSlide.classList.contains('slide-white')) {
+      counter.style.color = '#888';
+      hint.style.color = '#aaa';
+    } else {
+      counter.style.color = 'rgba(255,255,255,0.45)';
+      hint.style.color = 'rgba(255,255,255,0.35)';
+    }
+    if (current > 1) {
+      hint.style.opacity = '0';
+      hint.style.transition = 'opacity 0.5s';
+    }
+  }
+
+  function next() { if (current < total - 1) { current++; updateSlide(); } }
+  function prev() { if (current > 0) { current--; updateSlide(); } }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+    if (e.key === 'Home') { e.preventDefault(); current = 0; updateSlide(); }
+    if (e.key === 'End') { e.preventDefault(); current = total - 1; updateSlide(); }
+  });
+
+  document.addEventListener('click', function(e) {
+    if (e.target.tagName === 'A') return;
+    var x = e.clientX;
+    if (x > window.innerWidth * 0.5) { next(); } else { prev(); }
+  });
+
+  var touchStartX = 0;
+  document.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', function(e) {
+    var diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) { diff > 0 ? next() : prev(); }
+  });
+
+  updateSlide();
+})();
+</script>
+</body>
+</html>
