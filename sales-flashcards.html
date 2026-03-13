@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maybern Sales Lifecycle — Question Flashcards</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --deep-green: #091D13;
+  --dark-green: #092115;
+  --green: #17412D;
+  --mint: #ECFFF5;
+  --light-mint: #F6FFFA;
+  --white: #FFFFFF;
+  --gray-100: #F7F8F8;
+  --gray-200: #E8ECEA;
+  --gray-300: #D1D6D3;
+  --gray-400: #9BA39F;
+  --gray-500: #6B756F;
+  --accent-gold: #C9A227;
+  --accent-coral: #E8734A;
+  --accent-blue: #3B82F6;
+  --font-primary: 'Inter', -apple-system, sans-serif;
+  --font-serif: Georgia, 'Times New Roman', serif;
+  --radius: 12px;
+  --shadow-sm: 0 1px 3px rgba(9,29,19,0.08);
+  --shadow-md: 0 4px 16px rgba(9,29,19,0.1);
+  --shadow-lg: 0 8px 32px rgba(9,29,19,0.14);
+  --shadow-xl: 0 16px 48px rgba(9,29,19,0.18);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: var(--font-primary); background: var(--light-mint); color: var(--deep-green); min-height:100vh; }
+
+/* ─── HEADER ─── */
+header { background: var(--deep-green); color: var(--white); padding: 20px 32px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+header h1 { font-size:18px; font-weight:700; letter-spacing:-0.3px; }
+header .subtitle { font-size:12px; color: var(--gray-400); font-weight:400; margin-top:2px; }
+.back-btn { background: rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15); color:var(--white); padding:8px 16px; border-radius:8px; cursor:pointer; font-size:13px; font-family:var(--font-primary); font-weight:500; transition:all .2s; display:none; }
+.back-btn:hover { background: rgba(255,255,255,0.2); }
+
+/* ─── ARC HOME ─── */
+#arc-home { padding: 40px 24px; max-width:1400px; margin:0 auto; }
+.arc-intro { text-align:center; margin-bottom:40px; }
+.arc-intro h2 { font-size:28px; font-weight:800; letter-spacing:-0.5px; margin-bottom:8px; }
+.arc-intro p { font-size:15px; color: var(--gray-500); max-width:520px; margin:0 auto; line-height:1.6; }
+
+/* Stage sections */
+.stage-section { margin-bottom:28px; }
+.stage-header { background: var(--green); color:var(--white); padding:14px 20px; border-radius: var(--radius) var(--radius) 0 0; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; display:flex; align-items:center; gap:10px; }
+.stage-header .stage-num { font-size:11px; font-weight:500; opacity:0.7; }
+.stage-meetings { display:flex; flex-wrap:wrap; gap:16px; padding:20px; background:var(--white); border:1px solid var(--gray-200); border-top:none; border-radius: 0 0 var(--radius) var(--radius); }
+.meeting-card { flex:1 1 260px; max-width:400px; background: var(--light-mint); border:1px solid var(--gray-200); border-radius:var(--radius); padding:18px; cursor:pointer; transition:all .25s; display:flex; flex-direction:column; }
+.meeting-card:hover { border-color:var(--green); box-shadow: var(--shadow-md); transform:translateY(-2px); }
+.meeting-card-top { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.meeting-num { font-size:10px; font-weight:700; color:var(--white); background:var(--green); padding:4px 8px; border-radius:6px; text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap; }
+.meeting-name { font-size:15px; font-weight:700; line-height:1.3; margin-bottom:6px; }
+.meeting-belief { font-size:12px; color:var(--gray-500); line-height:1.5; font-style:italic; font-family:var(--font-serif); flex:1; }
+.meeting-qcount { font-size:11px; color:var(--green); font-weight:600; margin-top:10px; padding-top:10px; border-top:1px solid var(--gray-200); display:flex; gap:14px; flex-wrap:wrap; }
+.meeting-qcount span { white-space:nowrap; }
+
+/* ─── PRACTICE VIEW ─── */
+#practice-view { display:none; padding:32px 24px; max-width:800px; margin:0 auto; }
+.practice-header { text-align:center; margin-bottom:32px; }
+.practice-header h2 { font-size:24px; font-weight:800; letter-spacing:-0.3px; }
+.practice-header .belief-shift { font-family:var(--font-serif); font-style:italic; color:var(--gray-500); font-size:14px; margin-top:8px; max-width:500px; margin-left:auto; margin-right:auto; line-height:1.5; }
+
+/* Mode selector */
+.mode-selector { display:flex; gap:8px; justify-content:center; margin-bottom:24px; flex-wrap:wrap; }
+.mode-btn { padding:8px 18px; border-radius:20px; border:1.5px solid var(--gray-300); background:var(--white); color:var(--gray-500); font-size:12px; font-weight:600; cursor:pointer; font-family:var(--font-primary); transition:all .2s; }
+.mode-btn.active { background:var(--green); color:var(--white); border-color:var(--green); }
+.mode-btn:hover:not(.active) { border-color:var(--green); color:var(--green); }
+
+/* Progress */
+.progress-bar { background:var(--gray-200); height:6px; border-radius:3px; margin-bottom:24px; overflow:hidden; }
+.progress-fill { background: linear-gradient(90deg, var(--green), #2a7a52); height:100%; border-radius:3px; transition: width .4s ease; }
+.progress-text { text-align:center; font-size:12px; color:var(--gray-400); margin-bottom:20px; font-weight:500; }
+
+/* ─── FLASHCARD: FLIP ─── */
+.flip-container { perspective:1000px; width:100%; max-width:600px; margin:0 auto 24px; cursor:pointer; }
+.flip-card { position:relative; width:100%; min-height:280px; transition:transform .6s; transform-style:preserve-3d; }
+.flip-card.flipped { transform:rotateY(180deg); }
+.flip-front, .flip-back { position:absolute; width:100%; min-height:280px; backface-visibility:hidden; border-radius:var(--radius); padding:40px 32px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; }
+.flip-front { background:var(--white); border:2px solid var(--gray-200); box-shadow:var(--shadow-md); }
+.flip-back { background:var(--deep-green); color:var(--white); transform:rotateY(180deg); }
+.flip-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:16px; }
+.flip-front .flip-label { color:var(--green); }
+.flip-back .flip-label { color:var(--mint); }
+.flip-question { font-size:17px; line-height:1.6; font-weight:500; }
+.flip-hint { font-size:12px; color:var(--gray-400); margin-top:20px; }
+.flip-back .flip-hint { color: rgba(255,255,255,0.4); }
+.flip-type-badge { position:absolute; top:16px; right:16px; font-size:10px; font-weight:600; padding:3px 10px; border-radius:12px; }
+.badge-advancing { background:rgba(23,65,45,0.1); color:var(--green); }
+.badge-confirming { background:rgba(59,130,246,0.1); color:var(--accent-blue); }
+.badge-meddpicc { background:rgba(232,115,74,0.1); color:var(--accent-coral); }
+
+/* ─── FLASHCARD: FILL IN BLANK ─── */
+.fill-card { background:var(--white); border:2px solid var(--gray-200); border-radius:var(--radius); padding:32px; max-width:600px; margin:0 auto 24px; box-shadow:var(--shadow-md); }
+.fill-card .question-text { font-size:17px; line-height:1.8; margin-bottom:20px; }
+.fill-card .blank { background:var(--mint); border-bottom:2px dashed var(--green); padding:2px 8px; font-weight:600; color:var(--green); border-radius:4px 4px 0 0; min-width:80px; display:inline-block; text-align:center; transition:all .3s; }
+.fill-card .blank.revealed { background:var(--green); color:var(--white); border-bottom-color:var(--green); border-radius:4px; }
+.fill-reveal-btn { background:var(--green); color:var(--white); border:none; padding:10px 28px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:var(--font-primary); transition:all .2s; }
+.fill-reveal-btn:hover { background:var(--dark-green); }
+
+/* ─── FLASHCARD: MATCHING ─── */
+.match-card { background:var(--white); border:2px solid var(--gray-200); border-radius:var(--radius); padding:32px; max-width:600px; margin:0 auto 24px; box-shadow:var(--shadow-md); }
+.match-card h3 { font-size:14px; font-weight:700; margin-bottom:16px; color:var(--green); }
+.match-columns { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.match-item { padding:12px 16px; border-radius:8px; font-size:13px; line-height:1.4; cursor:pointer; border:2px solid var(--gray-200); transition:all .2s; user-select:none; }
+.match-item:hover { border-color:var(--green); }
+.match-item.selected { border-color:var(--green); background:var(--mint); }
+.match-item.correct { border-color:#22c55e; background:#f0fdf4; }
+.match-item.wrong { border-color:#ef4444; background:#fef2f2; animation:shake .4s; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+.match-left .match-item { font-weight:600; font-size:12px; }
+.match-score { text-align:center; margin-top:16px; font-size:13px; color:var(--gray-500); font-weight:500; }
+
+/* ─── FLASHCARD: MULTIPLE CHOICE ─── */
+.mc-card { background:var(--white); border:2px solid var(--gray-200); border-radius:var(--radius); padding:32px; max-width:600px; margin:0 auto 24px; box-shadow:var(--shadow-md); }
+.mc-card .mc-prompt { font-size:15px; font-weight:600; margin-bottom:20px; line-height:1.5; }
+.mc-option { padding:14px 18px; border:2px solid var(--gray-200); border-radius:8px; margin-bottom:8px; cursor:pointer; font-size:14px; line-height:1.5; transition:all .2s; }
+.mc-option:hover { border-color:var(--green); background:var(--light-mint); }
+.mc-option.correct-choice { border-color:#22c55e; background:#f0fdf4; }
+.mc-option.wrong-choice { border-color:#ef4444; background:#fef2f2; }
+.mc-option.disabled { pointer-events:none; opacity:.7; }
+
+/* ─── NAV BUTTONS ─── */
+.nav-buttons { display:flex; justify-content:center; gap:12px; margin-top:16px; }
+.nav-btn { padding:10px 24px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:var(--font-primary); transition:all .2s; border:none; }
+.nav-btn.primary { background:var(--green); color:var(--white); }
+.nav-btn.primary:hover { background:var(--dark-green); }
+.nav-btn.secondary { background:var(--white); color:var(--green); border:1.5px solid var(--gray-300); }
+.nav-btn.secondary:hover { border-color:var(--green); }
+
+/* ─── RESULTS ─── */
+.results-card { background:var(--white); border-radius:var(--radius); padding:48px 32px; text-align:center; max-width:500px; margin:0 auto; box-shadow:var(--shadow-lg); }
+.results-card .emoji { font-size:48px; margin-bottom:16px; }
+.results-card h3 { font-size:22px; font-weight:700; margin-bottom:8px; }
+.results-card p { font-size:14px; color:var(--gray-500); line-height:1.5; margin-bottom:24px; }
+.results-card .score { font-size:48px; font-weight:800; color:var(--green); }
+
+/* Responsive */
+@media (max-width:768px) {
+  .stage-meetings { flex-direction:column; }
+  .meeting-card { max-width:100%; }
+  .match-columns { grid-template-columns:1fr; }
+  #arc-home { padding:24px 16px; }
+  #practice-view { padding:24px 16px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Maybern Sales Lifecycle</h1>
+    <div class="subtitle">Question Practice Flashcards</div>
+  </div>
+  <button class="back-btn" id="backBtn" onclick="goHome()">← Back to Arc</button>
+</header>
+
+<div id="arc-home"></div>
+<div id="practice-view"></div>
+
+<script>
+// ─── DATA ───
+const meetings = {
+  "M1": {
+    name: "Initial Call",
+    stage: "Connectivity",
+    belief: '"I have a structural risk I haven\'t fully examined."',
+    proof: "Agrees and calendars Initial Demo with a named senior finance stakeholder.",
+    advancing: [
+      "Walk me through who actually owns the waterfall logic today — and what happens when that person is unavailable for a quarter-end.",
+      "When an LP asks you to defend a specific calculation, what does the process look like to trace it back to the source?",
+      "If I asked your team to show me every manual override made in the last distribution cycle, how quickly could they produce that?",
+      "How many of your fund structures have side-letter economics that live outside your primary excel model?",
+      "What would happen to your next distribution cycle if your lead fund accountant left tomorrow?",
+      "When you think about scaling from your current fund by doubling, where does the process start to feel fragile?",
+      "Has anyone on the leadership team ever raised concerns about the defensibility of your waterfall outputs to auditors or LPs?",
+      "How would you describe your relationship with your fund admin — what's working and what isn't?",
+      "How long does your distribution process typically take end-to-end?",
+      "Have you ever caught errors in your admin's calculations?",
+      "On a scale of 1–10, how would you prioritize fixing those issues?",
+      "If you fast-forward six quarters, what part of your current process worries you most?"
+    ],
+    confirming: [
+      "We have you at roughly $X AUM — how large is the finance and accounting team to support this?",
+      "Our understanding is you're running closed-ended funds — is that the full picture, or do you have open-ended vehicles too?",
+      "Are you currently raising a new fund?",
+      "Based on what we've discussed, it sounds like there are a few structural risks worth examining more closely — would you agree?",
+      "If we could show you how firms with similar complexity have addressed these exact gaps, would it be worth 45 minutes with your CFO / Head of Fund Ops?",
+      "Who on your team would need to be in the room for that conversation to be productive?",
+      "What does your calendar look like in the next two weeks to schedule that?"
+    ],
+    meddpicc: []
+  },
+  "M2": {
+    name: "Initial Demo",
+    stage: "Opportunity Qualification",
+    belief: '"There\'s a credible alternative to the status quo worth evaluating seriously."',
+    proof: "Agrees to Coordination Meeting with evaluation stakeholders identified.",
+    advancing: [
+      "Current State — Walk me through how you run a distribution today — what does that process actually look like?",
+      "Pain — How long does the full process take from decision to funds out the door?",
+      "Impact — Has a delayed or corrected distribution ever created a trust issue with an LP?",
+      "Priority — Is streamlining this on management's radar, or more of a day-to-day frustration?",
+      "When you see a centralized calculation layer like this, what's the first thing you think about relative to your current setup?",
+      "If your auditors could trace any LP's economics back to a single source of truth in under a minute, how would that change your quarter-end?",
+      "Think about the last time you were under pressure during an audit cycle — what would have made that materially easier?",
+      "At what point does your current approach start breaking under the weight of new fund launches or increasing LP complexity?",
+      "When you look at what we just showed you, where do you see the biggest gap between this and how your team operates today?"
+    ],
+    confirming: [
+      "Does what you've seen feel like it addresses a real problem, or is this more of a nice-to-have?",
+      "If this is worth exploring further, who else on your team would need to weigh in on whether it fits your environment?",
+      "Would it make sense to bring those stakeholders into a coordination meeting so we can scope a proper evaluation?",
+      "What would need to be true for you to feel comfortable recommending that next step internally?"
+    ],
+    meddpicc: [
+      {label:"C2", q:"Have you looked at solutions for this before — and if so, what's kept you from moving forward?"},
+      {label:"D1", q:"If you were to evaluate a solution for this — what would the non-negotiables be?"}
+    ]
+  },
+  "M3": {
+    name: "Coordination Meeting",
+    stage: "Opportunity Qualification",
+    belief: '"A proper evaluation requires defined scope, roles, and timeline — not an open-ended exploration."',
+    proof: "Willing to sign NDA / data-access locked; Mutual Action Plan (MAP) agreed with dates.",
+    advancing: [
+      "When an LP or auditor challenges a distribution, who in your org is ultimately accountable for defending that number?",
+      "If you were to evaluate a platform like this properly, who would need to be involved to make sure nothing gets missed?",
+      "Walk me through how decisions like this have been made in the past — what worked, and what slowed things down?",
+      "Is there an event on your calendar — a fundraise, an audit, a fund launch — that creates natural urgency around resolving this?"
+    ],
+    confirming: [
+      "It sounds like we have the right stakeholders identified — does that feel complete, or is anyone missing?",
+      "Would you feel comfortable mapping out a timeline with clear milestones and owners — would your team be able to commit to that cadence?",
+      "Are you comfortable moving forward with the NDA and data-access steps so we can work with real information?",
+      "Can we lock in the next three meetings on the calendar now, so this doesn't lose momentum?"
+    ],
+    meddpicc: [
+      {label:"C2", q:"Are there other vendors in this space your team is evaluating or has looked at recently — for instance a new fund admin, or investor portal? What's driving that search?"},
+      {label:"C1", q:"Who on your team has the most to gain if this gets solved the right way?"},
+      {label:"D1", q:"Are there specific criteria your team will use to evaluate this formally?"},
+      {label:"P", q:"What does your standard vendor onboarding or procurement process typically look like?"}
+    ]
+  },
+  "M4": {
+    name: "Value Creation",
+    stage: "Opportunity Qualification",
+    belief: '"The cost of inaction is higher than the cost of change."',
+    proof: "Shares internal data or financials; agrees to File Review.",
+    advancing: [
+      "If we quantified the person-hours your team spends on a single distribution cycle — across modeling, QC, reconciliation, and reporting — what would that number be?",
+      "What's the fully-loaded annual cost of your current distribution process when you factor in people, systems, and external support?",
+      "If your fund count grows by two in the next 18 months, how does your current cost structure scale — linearly, or does it start to compound?",
+      "If you had to reconstruct a distribution from scratch to answer an LP challenge, what would that cost in time and credibility?",
+      "When your CFO looks at this line item, what's the ROI story you'd need to tell to justify a platform investment?"
+    ],
+    confirming: [
+      "Based on what we've mapped, is this a material enough problem to warrant executive attention — or is it still manageable with your current setup?",
+      "If you were to present this business case internally, what would you need from us to make that conversation land?",
+      "Does the ROI justification we've built together hold up against how your leadership team evaluates investments like this?",
+      "Do you feel the cost of the status quo has been quantified well enough to compare against a platform investment?",
+      "Of the areas we've discussed — people cost, error risk, scaling fragility — which one carries the most weight with your leadership team?",
+      "Can we lock in the next meeting date to begin the File Review, now that we've established the financial picture?"
+    ],
+    meddpicc: []
+  },
+  "M5": {
+    name: "Process Review",
+    stage: "File Review",
+    belief: '"Our current process has specific fragilities that mirror exactly what Maybern solves."',
+    proof: "Artifacts (files, templates, examples) gathered and shared for Tech Demo.",
+    advancing: [
+      "Let\u2019s map your process end-to-end: starting from when fund terms are set, walk me through every step until an LP receives their distribution statement.",
+      "At which points in that flow does data get manually entered or re-keyed from one system to another?",
+      "Where do overrides happen \u2014 and who has visibility into what was changed and why?",
+      "How does your team reconcile the waterfall output back to the source data before it goes out?",
+      "Which fund structures have side-letter provisions that require separate handling outside your primary workflow?",
+      "How do you manage version control when multiple people are touching the same calculation?",
+      "If your lead person on this process were unavailable for an entire quarter-end cycle, what breaks?",
+      "Looking at the full map we just built \u2014 where do you see the most fragile points?"
+    ],
+    confirming: [
+      "Now that we\u2019ve mapped this out, do the fragility points we identified feel accurate \u2014 or are there others?",
+      "Do you see the connection between these specific gaps and what we showed you in the demo?",
+      "For the Tech File Review, we\u2019ll need sample files, templates, and examples of your most complex structures \u2014 can your team pull those together?",
+      "Who should we coordinate with to get access to those artifacts, and when can we expect them?"
+    ],
+    meddpicc: []
+  },
+  "M6": {
+    name: "Tech File Review",
+    stage: "File Review",
+    belief: '"Our data and logic are understood for a tailored demo."',
+    proof: "Dataset finalized and SME\u2019s prepared for M8 Tailored Demo.",
+    advancing: [
+      "Looking at the files you\u2019ve shared, how well do these represent the full range of waterfall tier structures across your funds?",
+      "Are there any calculations that live off-system \u2014 in side spreadsheets, emails, or someone\u2019s head \u2014 that aren\u2019t captured in what we\u2019re looking at?",
+      "When you hit peak volume (quarter-end, audit season), how does the data flow hold up \u2014 where does it bottleneck?",
+      "Do you have any bespoke fund structures or LP arrangements that don\u2019t fit neatly into your standard templates?",
+      "Where have you seen data inconsistencies or format mismatches cause problems in the past?"
+    ],
+    confirming: [
+      "Based on what we\u2019ve reviewed, do you feel confident the dataset captures enough complexity for a realistic demo?",
+      "Are there any gaps we\u2019ve identified that need to be filled before we can build the tailored demo?",
+      "Can we agree that this dataset is finalized \u2014 or do you need a few more days to supplement it?",
+      "Who on your team should we loop in for any follow-up questions as we build the demo environment?"
+    ],
+    meddpicc: []
+  },
+  "M7": {
+    name: "Demo Prep (Internal)",
+    stage: "Technical & Tailored Demo",
+    belief: '"This solution can be tailored to our specific fund structures and operating environment."',
+    proof: "Signs off on demo script; confirms exec audience and timeline.",
+    advancing: [
+      "Based on what we've seen in their data, what are the top two or three pain scenarios we want the exec team to feel during the demo?",
+      "Where did we find the most side-letter divergence or LP-specific complexity that we should highlight?",
+      "Which reconciliation or admin burden showed the biggest gap between their current process and what we can automate?",
+      "How should we frame the ROI and pricing conversation to align with what their CFO cares about?",
+      "What's the narrative we want the exec team to walk away with — and how should we sequence the demo to land it?"
+    ],
+    confirming: [
+      "Does this storyline feel right for the audience we're presenting to — or are there political dynamics we should adjust for?",
+      "Are the roles and speaking order clear for our side, and do we have the right Maybern people in the room?",
+      "Is the timing realistic for the demo — do we have enough room for Q&A and next-step discussion?",
+      "Is there anyone in the exec audience we haven't mapped yet who could derail or accelerate the deal?"
+    ],
+    meddpicc: [
+      {label:"C1", q:"Has our champion explicitly told us how they're positioning this for internal approval — and are we confident in that narrative?"}
+    ]
+  },
+  "M8": {
+    name: "Tailored Demo",
+    stage: "Technical & Tailored Demo",
+    belief: '"This isn\'t a generic platform — it reflects our specific fund structures, LP terms, and operational realities."',
+    proof: "Exec sponsor gives verbal greenlight; requests proposal or scoping next steps.",
+    advancing: [
+      "When you look at this output side-by-side with what your team produces today — does it match what you'd expect, or is there a gap?",
+      "If this were your system of record tomorrow, what's the first thing that would be materially different about your quarter-end?",
+      "How confident would you feel using this to model a new fund from scratch — including side letters and LP-specific terms?",
+      "If your team adopted this workflow, what changes to your quarterly close process could you start making immediately?",
+      "When you think about rolling this out across your full portfolio, what concerns come to mind?"
+    ],
+    confirming: [
+      "Based on what you've seen — does this feel like a real solution to the problems we've been discussing, or are there still gaps?",
+      "What does your CFO or Board need to see in a proposal for this to move forward?",
+      "Is there a clear path from here to a purchase decision — and who else needs to be involved?",
+      "Can we agree on the next steps and lock in a timeline for the proposal review?"
+    ],
+    meddpicc: [
+      {label:"C2", q:"How does what you've seen compare to anything else you've evaluated — and what stands out as different?"},
+      {label:"D1", q:"Is there a specific feature or capability that would be a make-or-break factor in your decision?"},
+      {label:"M", q:"If you had to build the business case for this internally, what numbers would you need to validate with your team first?"}
+    ]
+  },
+  "M9": {
+    name: "Future State Workshop",
+    stage: "Technical & Tailored Demo",
+    belief: '"We can see a realistic path from where we are today to a better operating model."',
+    proof: "Agrees to proposal; confirms internal champion and decision timeline.",
+    advancing: [
+      "If you could design the ideal future state for your fund operations — no constraints — what would that look like?",
+      "Given where you are today, what's the most realistic starting point for a phased rollout — and what would need to wait?",
+      "Who on your team would own the change management process, and how much bandwidth do they realistically have?",
+      "Are there resource constraints — budget, headcount, competing priorities — that could slow down implementation even if the decision is made?",
+      "What does success look like at 90 days post-launch — and how would you measure it internally?",
+      "If we got this live before your next fundraise or audit cycle, how much more comfortable would you feel on the platform?"
+    ],
+    confirming: [
+      "Does the future state we've mapped feel achievable — or does it need to be scaled back to be realistic?",
+      "Are the success metrics we've defined the right ones — or is there something else your leadership would care about more?",
+      "Based on everything we've discussed, are you comfortable giving us the green light to prepare a formal proposal?",
+      "What internal approvals do you need before you can formally commit to moving forward?"
+    ],
+    meddpicc: [
+      {label:"C2", q:"When you compare what we've mapped to any alternative you've considered — including staying on your current path — why does this feel like the right direction?"},
+      {label:"C1", q:"Who on your team is going to carry this across the finish line internally — and do they have the authority and motivation to do it?"},
+      {label:"M", q:"If your CFO asked you to define year-one success in one sentence, what would you say?"}
+    ]
+  },
+  "M10": {
+    name: "Proposal Review",
+    stage: "Proposal & Negotiation",
+    belief: '"The scope, pricing, and terms are fair and aligned with the value we expect."',
+    proof: "Verbal agreement on commercial terms; legal/procurement process initiated.",
+    advancing: [
+      "Does the scope we've outlined accurately reflect what you need to go live — or are there gaps we should address before you take this to your team?",
+      "Is the commercial structure aligned with how your organization typically evaluates and approves investments like this?",
+      "Are there any additional approvals — board-level, fund-level, or otherwise — that we haven't accounted for?",
+      "Is there anyone else on your side who should review this before it moves to legal or procurement?",
+      "If anything in this proposal were to change, what would it be — and what would need to stay exactly as is?",
+      "Does this proposal align with the business case we built together — or are there areas where you need us to strengthen the justification?"
+    ],
+    confirming: [
+      "Do we have verbal alignment on scope, pricing, and support — or are there open items we need to resolve first?",
+      "Is the proposed timeline realistic for your team — and are there any dates that are non-negotiable on your side?",
+      "What's the target date for getting this into legal review — and is there anything that could delay that?",
+      "Are you comfortable moving this to legal and procurement — or is there anything else you need from us before that step?"
+    ],
+    meddpicc: []
+  },
+  "M11": {
+    name: "Legal Review",
+    stage: "Paper Process",
+    belief: '"There are no material legal or commercial blockers remaining."',
+    proof: "Redlines resolved; final document ready for signature.",
+    advancing: [
+      "Are there any material clauses in the agreement that your legal team sees as a blocker — or are we mostly in markup territory?",
+      "Is there anything in the redlines that's a commercial concern disguised as a legal one — and if so, should we bring in the business side to align?",
+      "Have any of the commercial terms shifted since the proposal was approved — and if so, do we need to re-confirm alignment with the business sponsor?",
+      "What does the signing sequence look like on your end — and who has final authority to execute?",
+      "Is there a procurement or vendor onboarding step that runs in parallel with legal — and are we tracking against that timeline?"
+    ],
+    confirming: [
+      "Are all redlines resolved — or are there any open items that could delay final execution?",
+      "Do both sides have a clear view of the final document — and is there anything that still needs to be reconciled?",
+      "What's the target date for getting signatures — and is that date firm or flexible?",
+      "Is there anything else — on your side or ours — that could delay closing this out?"
+    ],
+    meddpicc: [
+      {label:"Internal", q:"Are you seeing any signals — internal or external — that the deal might be losing momentum or support?"}
+    ]
+  },
+  "M12": {
+    name: "Implementation Kickoff",
+    stage: "Closed / Onboarding",
+    belief: '"We\'re set up for a successful launch with clear ownership, timeline, and support."',
+    proof: "Implementation plan signed off; kickoff meeting scheduled with full team.",
+    advancing: [
+      "What are the top three things you want to make sure we get right in the first phase of implementation?",
+      "Who on your team will be the day-to-day point of contact for implementation — and do they have the bandwidth?",
+      "Are there any upcoming events — fundraises, audits, distributions — that we need to plan around or accelerate toward?",
+      "What does a successful first 30 days look like for your team — and how should we measure it together?",
+      "Have you been through a platform implementation before that stalled — and if so, what caused it?"
+    ],
+    confirming: [
+      "Does the implementation plan we've outlined match your expectations — or are there areas where we need to adjust?",
+      "Have we identified the full team on your side — and does everyone know their role and timeline?",
+      "Can we lock in the kickoff date and first set of milestones right now?",
+      "Is there anything else you need from us before we officially begin?"
+    ],
+    meddpicc: []
+  }
+};
+
+const stageOrder = [
+  { name: "Connectivity", meetings: ["M1"] },
+  { name: "Opportunity Qualification", meetings: ["M2","M3","M4"] },
+  { name: "File Review", meetings: ["M5","M6"] },
+  { name: "Technical & Tailored Demo", meetings: ["M7","M8","M9"] },
+  { name: "Proposal & Negotiation", meetings: ["M10"] },
+  { name: "Paper Process", meetings: ["M11"] },
+  { name: "Closed", meetings: ["M12"] }
+];
+
+// ─── RENDER ARC HOME ───
+function renderHome() {
+  const el = document.getElementById('arc-home');
+  let html = `<div class="arc-intro"><h2>The Maybern Story Arc</h2><p>Click any meeting to practice its advancing and confirming questions with interactive flashcards.</p></div>`;
+
+  stageOrder.forEach((stage, idx) => {
+    html += `<div class="stage-section">`;
+    html += `<div class="stage-header"><span class="stage-num">Stage ${idx + 1}</span>${stage.name}</div>`;
+    html += `<div class="stage-meetings">`;
+    stage.meetings.forEach(mk => {
+      const m = meetings[mk];
+      html += `<div class="meeting-card" onclick="startPractice('${mk}')">
+        <div class="meeting-card-top">
+          <div class="meeting-num">${mk}</div>
+        </div>
+        <div class="meeting-name">${m.name}</div>
+        <div class="meeting-belief">${m.belief}</div>
+        <div class="meeting-qcount">`;
+      if (m.advancing.length + m.confirming.length + m.meddpicc.length === 0) {
+        html += `<span>Belief shift only</span>`;
+      } else {
+        html += `<span>${m.advancing.length} advancing</span><span>${m.confirming.length} confirming</span>`;
+        if (m.meddpicc.length) html += `<span>${m.meddpicc.length} MEDDPICC</span>`;
+      }
+      html += `</div></div>`;
+    });
+    html += `</div></div>`;
+  });
+
+  el.innerHTML = html;
+}
+
+// ─── PRACTICE STATE ───
+let currentMeeting = null;
+let currentMode = 'flip';
+let allCards = [];
+let cardIndex = 0;
+let score = 0;
+let matchState = {};
+
+function shuffle(arr) { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+function buildCards(mk) {
+  const m = meetings[mk];
+  let cards = [];
+  m.advancing.forEach((q,i) => cards.push({type:'advancing', q, num:i+1}));
+  m.confirming.forEach((q,i) => cards.push({type:'confirming', q, num:i+1}));
+  m.meddpicc.forEach(({label,q}) => cards.push({type:'meddpicc', q, num:label}));
+  return shuffle(cards);
+}
+
+function startPractice(mk) {
+  currentMeeting = mk;
+  allCards = buildCards(mk);
+  cardIndex = 0; score = 0;
+  document.getElementById('arc-home').style.display = 'none';
+  document.getElementById('practice-view').style.display = 'block';
+  document.getElementById('backBtn').style.display = 'block';
+  if (allCards.length === 0) {
+    const m = meetings[mk];
+    document.getElementById('practice-view').innerHTML = `
+      <div style="max-width:600px;margin:60px auto;text-align:center;padding:40px;">
+        <div style="font-size:48px;margin-bottom:16px;">📋</div>
+        <h2 style="font-size:22px;font-weight:700;margin-bottom:8px;">${mk} — ${m.name}</h2>
+        <p style="font-size:15px;color:var(--gray-500);line-height:1.6;margin-bottom:24px;">Practice questions for this meeting are coming soon.</p>
+        <div style="background:var(--mint);border-radius:var(--radius);padding:24px;text-align:left;">
+          <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--green);margin-bottom:8px;">Belief Shift</div>
+          <p style="font-size:14px;line-height:1.6;margin-bottom:16px;">${m.belief}</p>
+          <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--green);margin-bottom:8px;">Proof of Shift</div>
+          <p style="font-size:14px;line-height:1.6;">${m.proof}</p>
+        </div>
+      </div>`;
+    return;
+  }
+  renderPractice();
+}
+
+function goHome() {
+  document.getElementById('arc-home').style.display = 'block';
+  document.getElementById('practice-view').style.display = 'none';
+  document.getElementById('backBtn').style.display = 'none';
+}
+
+function setMode(mode) {
+  currentMode = mode;
+  cardIndex = 0; score = 0;
+  allCards = buildCards(currentMeeting);
+  renderPractice();
+}
+
+function renderPractice() {
+  const m = meetings[currentMeeting];
+  const el = document.getElementById('practice-view');
+  const total = allCards.length;
+  const pct = total > 0 ? Math.round((cardIndex/total)*100) : 0;
+
+  let html = `<div class="practice-header">
+    <h2>${currentMeeting} — ${m.name}</h2>
+    <div class="belief-shift">Belief Shift: ${m.belief}</div>
+  </div>`;
+
+  html += `<div class="mode-selector">
+    <button class="mode-btn ${currentMode==='flip'?'active':''}" onclick="setMode('flip')">Flip Cards</button>
+    <button class="mode-btn ${currentMode==='fill'?'active':''}" onclick="setMode('fill')">Fill in Blank</button>
+    <button class="mode-btn ${currentMode==='match'?'active':''}" onclick="setMode('match')">Matching</button>
+    <button class="mode-btn ${currentMode==='mc'?'active':''}" onclick="setMode('mc')">Quiz</button>
+  </div>`;
+
+  if (currentMode === 'match') {
+    html += renderMatch();
+  } else if (cardIndex >= total) {
+    html += renderResults();
+  } else {
+    html += `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>`;
+    html += `<div class="progress-text">${cardIndex + 1} of ${total}</div>`;
+    const card = allCards[cardIndex];
+    if (currentMode === 'flip') html += renderFlip(card);
+    else if (currentMode === 'fill') html += renderFill(card);
+    else if (currentMode === 'mc') html += renderMC(card);
+  }
+
+  el.innerHTML = html;
+}
+
+// ─── FLIP CARDS ───
+function renderFlip(card) {
+  const typeLabel = card.type === 'meddpicc' ? `MEDDPICC (${card.num})` : card.type === 'advancing' ? 'Advancing' : 'Confirming';
+  const badgeClass = card.type === 'meddpicc' ? 'badge-meddpicc' : card.type === 'advancing' ? 'badge-advancing' : 'badge-confirming';
+  return `<div class="flip-container" onclick="this.querySelector('.flip-card').classList.toggle('flipped')">
+    <div class="flip-card">
+      <div class="flip-front">
+        <span class="flip-type-badge ${badgeClass}">${typeLabel}</span>
+        <div class="flip-label">Question #${card.num}</div>
+        <div class="flip-question">${card.q}</div>
+        <div class="flip-hint">Tap to see the category</div>
+      </div>
+      <div class="flip-back">
+        <span class="flip-type-badge ${badgeClass}" style="background:rgba(255,255,255,0.15)">${typeLabel}</span>
+        <div class="flip-label">Answer Key</div>
+        <div class="flip-question" style="font-size:15px">${card.q}</div>
+        <div style="margin-top:16px;font-size:13px;opacity:.7">This is a <strong>${card.type}</strong> question.<br>Purpose: ${card.type==='advancing'?'Move prospect toward belief shift':card.type==='confirming'?'Verify shift occurred & secure proof':'Fill MEDDPICC gap'}</div>
+        <div class="flip-hint">Tap to flip back</div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-buttons">
+    <button class="nav-btn secondary" onclick="prevCard()">← Previous</button>
+    <button class="nav-btn primary" onclick="nextCard()">Next →</button>
+  </div>`;
+}
+
+// ─── FILL IN BLANK ───
+function renderFill(card) {
+  const words = card.q.split(' ');
+  const blankCount = Math.max(2, Math.floor(words.length * 0.25));
+  const indices = new Set();
+  while (indices.size < blankCount) {
+    const idx = Math.floor(Math.random() * words.length);
+    if (words[idx].length > 3) indices.add(idx);
+  }
+  const display = words.map((w, i) => indices.has(i) ? `<span class="blank" data-word="${w}">???</span>` : w).join(' ');
+  const typeLabel = card.type === 'meddpicc' ? `MEDDPICC (${card.num})` : card.type === 'advancing' ? 'Advancing' : 'Confirming';
+  const badgeClass = card.type === 'meddpicc' ? 'badge-meddpicc' : card.type === 'advancing' ? 'badge-advancing' : 'badge-confirming';
+  return `<div class="fill-card">
+    <span class="flip-type-badge ${badgeClass}" style="float:right;margin-bottom:12px">${typeLabel}</span>
+    <div style="clear:both"></div>
+    <div class="question-text" id="fillText">${display}</div>
+    <div style="text-align:center">
+      <button class="fill-reveal-btn" onclick="revealBlanks()">Reveal Words</button>
+    </div>
+  </div>
+  <div class="nav-buttons" style="margin-top:16px">
+    <button class="nav-btn secondary" onclick="prevCard()">← Previous</button>
+    <button class="nav-btn primary" onclick="nextCard()">Next →</button>
+  </div>`;
+}
+
+function revealBlanks() {
+  document.querySelectorAll('.blank').forEach(el => {
+    el.textContent = el.dataset.word;
+    el.classList.add('revealed');
+  });
+}
+
+// ─── MULTIPLE CHOICE ───
+function renderMC(card) {
+  // Generate a question about the card's type
+  const opts = shuffle(['advancing','confirming','meddpicc']).slice(0,3);
+  if (!opts.includes(card.type)) opts[2] = card.type;
+  const shuffledOpts = shuffle(opts);
+  const labels = {advancing:'Advancing — Move toward belief shift', confirming:'Confirming — Verify shift & secure proof', meddpicc:`MEDDPICC Gap (${card.num})`};
+  return `<div class="mc-card">
+    <div class="mc-prompt">What type of question is this?<br><br><em style="font-weight:400;color:var(--gray-500);font-size:14px">"${card.q.length > 120 ? card.q.substring(0,120)+'…' : card.q}"</em></div>
+    ${shuffledOpts.map((o,i) => `<div class="mc-option" data-correct="${o===card.type}" onclick="checkMC(this,'${o}','${card.type}')">${labels[o] || o}</div>`).join('')}
+  </div>
+  <div class="nav-buttons" style="margin-top:16px">
+    <button class="nav-btn secondary" onclick="prevCard()">← Previous</button>
+    <button class="nav-btn primary" onclick="nextCard()">Next →</button>
+  </div>`;
+}
+
+function checkMC(el, chosen, correct) {
+  document.querySelectorAll('.mc-option').forEach(o => o.classList.add('disabled'));
+  if (chosen === correct) { el.classList.add('correct-choice'); score++; }
+  else {
+    el.classList.add('wrong-choice');
+    document.querySelector(`.mc-option[data-correct="true"]`).classList.add('correct-choice');
+  }
+}
+
+// ─── MATCHING ───
+function renderMatch() {
+  const m = meetings[currentMeeting];
+  // Pick 4 random questions from the meeting
+  let pool = [];
+  m.advancing.slice(0,3).forEach(q => pool.push({type:'advancing',q}));
+  m.confirming.slice(0,3).forEach(q => pool.push({type:'confirming',q}));
+  m.meddpicc.slice(0,2).forEach(({label,q}) => pool.push({type:'meddpicc ('+label+')',q}));
+  pool = shuffle(pool).slice(0,5);
+
+  const leftItems = shuffle(pool.map((p,i) => ({id:i, text: p.q.length>80 ? p.q.substring(0,80)+'…' : p.q, type:p.type})));
+  const rightItems = shuffle(pool.map((p,i) => ({id:i, label: p.type.charAt(0).toUpperCase()+p.type.slice(1)})));
+
+  matchState = {pairs:pool.length, matched:0, selected:null, leftDone:new Set(), rightDone:new Set()};
+
+  let html = `<div class="match-card">
+    <h3>Match the question to its type</h3>
+    <div class="match-columns">
+      <div class="match-left">${leftItems.map(l => `<div class="match-item" data-side="left" data-id="${l.id}" onclick="matchClick(this)">${l.text}</div>`).join('')}</div>
+      <div class="match-right">${rightItems.map(r => `<div class="match-item" data-side="right" data-id="${r.id}" onclick="matchClick(this)">${r.label}</div>`).join('')}</div>
+    </div>
+    <div class="match-score" id="matchScore">Matched: 0 / ${pool.length}</div>
+  </div>`;
+  return html;
+}
+
+function matchClick(el) {
+  const side = el.dataset.side;
+  const id = parseInt(el.dataset.id);
+  if (el.classList.contains('correct')) return;
+
+  if (!matchState.selected) {
+    matchState.selected = {side, id, el};
+    el.classList.add('selected');
+  } else {
+    if (matchState.selected.side === side) {
+      matchState.selected.el.classList.remove('selected');
+      matchState.selected = {side, id, el};
+      el.classList.add('selected');
+    } else {
+      // Check match
+      if (matchState.selected.id === id) {
+        matchState.selected.el.classList.add('correct');
+        matchState.selected.el.classList.remove('selected');
+        el.classList.add('correct');
+        matchState.matched++;
+        document.getElementById('matchScore').textContent = `Matched: ${matchState.matched} / ${matchState.pairs}`;
+      } else {
+        el.classList.add('wrong');
+        matchState.selected.el.classList.add('wrong');
+        matchState.selected.el.classList.remove('selected');
+        setTimeout(() => {
+          el.classList.remove('wrong');
+          document.querySelectorAll('.match-item.wrong').forEach(e => e.classList.remove('wrong'));
+        }, 600);
+      }
+      matchState.selected = null;
+    }
+  }
+}
+
+// ─── RESULTS ───
+function renderResults() {
+  const total = allCards.length;
+  const emoji = score/total > 0.8 ? '🎯' : score/total > 0.5 ? '💪' : '📚';
+  return `<div class="results-card">
+    <div class="emoji">${emoji}</div>
+    <h3>Practice Complete!</h3>
+    <p>You've gone through all ${total} questions for this meeting.</p>
+    ${currentMode==='mc' ? `<div class="score">${score}/${total}</div><p style="margin-top:8px">correct answers</p>` : ''}
+    <div class="nav-buttons" style="justify-content:center;margin-top:24px">
+      <button class="nav-btn secondary" onclick="setMode(currentMode)">Practice Again</button>
+      <button class="nav-btn primary" onclick="goHome()">Back to Arc</button>
+    </div>
+  </div>`;
+}
+
+function nextCard() { cardIndex++; renderPractice(); }
+function prevCard() { if(cardIndex>0) cardIndex--; renderPractice(); }
+
+// ─── INIT ───
+renderHome();
+</script>
+</body>
+</html>
